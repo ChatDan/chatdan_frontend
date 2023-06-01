@@ -1,13 +1,9 @@
-import 'package:dio/dio.dart';
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:go_router/go_router.dart';
-
-import '../../repository/chatdan_repository.dart';
-import '../../utils/errors.dart';
 
 class AddQuestionPage extends StatefulWidget {
   final int messageBoxId;
+
   const AddQuestionPage(this.messageBoxId, {super.key});
 
   @override
@@ -15,12 +11,13 @@ class AddQuestionPage extends StatefulWidget {
 }
 
 class _AddQuestionPageState extends State<AddQuestionPage> {
-  bool _isPrivate = false;
   final _inputController = TextEditingController();
+  bool _isPublic = false;
+  bool _isAnonymous = false;
 
   void _togglePrivacy() {
     setState(() {
-      _isPrivate = !_isPrivate;
+      _isPublic = !_isPublic;
     });
   }
 
@@ -28,17 +25,13 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
     final question = _inputController.text;
     try {
       await ChatDanRepository().createAPost(
-          messageBoxId: widget.messageBoxId,
-          content: question,
-          isAnonymous: _isPrivate,
-          isPublic: true,
+        messageBoxId: widget.messageBoxId,
+        content: question,
+        isAnonymous: _isAnonymous,
+        isPublic: _isPublic,
       );
     } catch (e) {
-      if (e is DioError && e.error is NotLoginError && mounted) {
-        context.go('/login');
-      } else {
-        SmartDialog.showToast(e.toString());
-      }
+      // do nothing
     }
 
     // 返回到上一个页面
@@ -55,7 +48,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         actions: [
           IconButton(
             onPressed: _togglePrivacy,
-            icon: Icon(_isPrivate ? Icons.lock : Icons.lock_open),
+            icon: Icon(_isPublic ? Icons.lock : Icons.lock_open),
           ),
         ],
       ),
@@ -63,9 +56,21 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            SwitchListTile(
+                title: const Text('匿名'),
+                value: _isAnonymous,
+                onChanged: (value) {
+                  setState(() {
+                    _isAnonymous = value;
+                  });
+                }),
             TextFormField(
               controller: _inputController,
-              decoration: const InputDecoration(labelText: '问题'),
+              maxLines: 10,
+              decoration: const InputDecoration(
+                hintText: '问题',
+                border: OutlineInputBorder(),
+              ),
               validator: (String? value) {
                 if (value == null || value.isEmpty) {
                   return '请输入问题';
@@ -75,11 +80,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
             ),
             ElevatedButton(
               onPressed: _addQuestion,
-              child: const Text('匿名提问'),
-            ),
-            ElevatedButton(
-              onPressed: _addQuestion,
-              child: const Text('普通提问'),
+              child: const Text('提问'),
             ),
           ],
         ),

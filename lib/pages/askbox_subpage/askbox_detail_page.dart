@@ -1,12 +1,10 @@
-import 'package:chatdan_frontend/repository/chatdan_repository.dart';
-import 'package:chatdan_frontend/utils/errors.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:chatdan_frontend/model/post.dart';
-import 'package:chatdan_frontend/pages/askbox_subpage/askbox_question_answer_detail_page.dart';
-import 'package:chatdan_frontend/pages/askbox_subpage/askbox_add_question_page.dart';
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
-import 'package:go_router/go_router.dart';
+
+import 'askbox_add_question_page.dart';
+import 'askbox_question_answer_detail_page.dart';
 
 class AskboxDetailPage extends StatefulWidget {
   final String title;
@@ -19,7 +17,7 @@ class AskboxDetailPage extends StatefulWidget {
 }
 
 class _AskboxDetailPageState extends State<AskboxDetailPage> {
-  bool _isPrivate = false;
+  bool _isPublic = false;
   List<Post> posts = [];
 
   @override
@@ -36,11 +34,7 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
     try {
       return await ChatDanRepository().loadPosts(pageNum: 1, pageSize: 10, messageBoxId: widget.id) ?? [];
     } catch (e) {
-      if (e is DioError && e.error is NotLoginError && mounted) {
-        context.go('/login');
-      } else {
-        SmartDialog.showToast(e.toString(), displayTime: const Duration(seconds: 1));
-      }
+      // do nothing
     }
     return [];
   }
@@ -48,16 +42,20 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
   // 是否私密
   void _togglePrivacy() {
     setState(() {
-      _isPrivate = !_isPrivate;
+      _isPublic = !_isPublic;
     });
   }
 
-  void _deleteAskbox() {
-    // TODO:删除提问箱的逻辑
-    // ..
-
-    // 返回到上一个页面
-    Navigator.pop(context);
+  void _deleteAskbox() async {
+    try {
+      await ChatDanRepository().deleteAMessageBox(widget.id);
+      SmartDialog.showToast('提问箱删除成功');
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      SmartDialog.showToast('提问箱删除失败');
+    }
   }
 
   void _navigateToQuestionPage() {
@@ -83,7 +81,7 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
         actions: [
           IconButton(
             onPressed: _togglePrivacy,
-            icon: Icon(_isPrivate ? Icons.lock : Icons.lock_open),
+            icon: Icon(_isPublic ? Icons.lock_open : Icons.lock),
           ),
           IconButton(
             onPressed: _deleteAskbox,
@@ -100,49 +98,47 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
           ),
           SizedBox(height: 16),
           if (posts.isEmpty)
-            Center(
-              child: Text('暂无回复')
-            )
+            Center(child: Text('暂无回复'))
           else
-          Expanded(
-            child: ListView.builder(
-              itemCount: posts.length,
-              itemBuilder: (context, index) {
-                final post = posts[index];
-                return GestureDetector(
-                  onTap: () {
-                    _navigateToQuestionAnswerDetail(post);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(16),
-                    margin: EdgeInsets.symmetric(vertical: 8),
-                    color: Colors.grey[200],
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          post.isAnonymous ? '匿名用户' : post.anonyname ?? '',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          post.content,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          post.channels?.first.content ?? '',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+            Expanded(
+              child: ListView.builder(
+                itemCount: posts?.length ?? 0,
+                itemBuilder: (context, index) {
+                  final post = posts![index];
+                  return GestureDetector(
+                    onTap: () {
+                      _navigateToQuestionAnswerDetail(post);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      color: Colors.grey[200],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            post.isAnonymous ? '匿名用户' : post.anonyname ?? '',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            post.content,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            post.channels?.first.content ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
-import 'package:chatdan_frontend/model/channel.dart';
-import 'package:chatdan_frontend/model/post.dart';
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:chatdan_frontend/model/post.dart';
+import 'package:chatdan_frontend/model/channel.dart';
 
 class QuestionAnswerDetailPage extends StatefulWidget {
   final Post post;
@@ -8,7 +9,8 @@ class QuestionAnswerDetailPage extends StatefulWidget {
   QuestionAnswerDetailPage(this.post);
 
   @override
-  _QuestionAnswerDetailPageState createState() => _QuestionAnswerDetailPageState();
+  _QuestionAnswerDetailPageState createState() =>
+      _QuestionAnswerDetailPageState();
 }
 
 class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
@@ -68,8 +70,8 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // 判断当前用户是提问者还是回答者
-          // final bool isQuestioner = widget.post.posterId == currentUserID; // 替换为实际的判断逻辑
-          const bool isQuestioner = true; // 替换为实际的判断逻辑
+          final bool isQuestioner = widget.post.posterId == ChatDanRepository().provider.userInfo!.id; // 替换为实际的判断逻辑
+          // final bool isQuestioner = true; // 替换为实际的判断逻辑
           if (isQuestioner) {
             // 提问者追加提问
             _navigateToQuestionPage();

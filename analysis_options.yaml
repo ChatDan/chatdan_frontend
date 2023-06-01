@@ -1,0 +1,28 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    - camel_case_types
+    - camel_case_extensions
+    - prefer_single_quotes
+    - prefer_const_constructors
+    - prefer_final_fields
+    - avoid_relative_lib_imports
+    - prefer_if_elements_to_conditional_expressions
+    - prefer_collection_literals
+    - avoid_empty_else
+    - prefer_is_empty
+    - prefer_foreach
+    - avoid_return_types_on_setters
+    - sort_child_properties_last
+    - prefer_const_literals_to_create_immutables
+    - unnecessary_null_in_if_null_operators
+    - no_duplicate_case_values
+    - avoid_double_and_int_checks
+    - prefer_spread_collections
+    - avoid_init_to_null
+    - prefer_generic_function_type_aliases

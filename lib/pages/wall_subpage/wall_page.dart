@@ -1,8 +1,10 @@
 import 'package:chatdan_frontend/bottom_bar.dart';
 import 'package:chatdan_frontend/model/wall.dart';
+import 'package:chatdan_frontend/pages/account_subpage/profile.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:intl/intl.dart';
 
 import 'create_wall_page.dart';
 
@@ -82,7 +84,7 @@ class _WallPageState extends State<WallPage> {
                   );
                   if (chosenDate != null) {
                     setState(() {
-                      _chosenDate = chosenDate;
+                      _chosenDate = chosenDate.toLocal();
                       _pagingController.refresh();
                     });
                   }
@@ -119,19 +121,39 @@ class WallWidget extends StatelessWidget {
         : (wall.poster!.avatar == null
             ? CircleAvatar(child: Text(wall.poster!.username.substring(0, 1)))
             : CircleAvatar(backgroundImage: NetworkImage(wall.poster!.avatar!)));
-    return Card(
-      child: ListTile(
-        leading: avatar,
-        title: Text(
-          username,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
+
+    Widget header = ListTile(
+      leading: avatar,
+      title: Text(
+        username,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
         ),
-        subtitle: Text(wall.content),
-        horizontalTitleGap: 16,
-        minVerticalPadding: 8,
+      ),
+      subtitle: Text(DateFormat.jm().format(wall.createdAt.toLocal())),
+      horizontalTitleGap: 16,
+      minVerticalPadding: 8,
+    );
+
+    if (!wall.isAnonymous) {
+      header = GestureDetector(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage(user: wall.poster!)));
+        },
+        child: header,
+      );
+    }
+    return Card(
+      child: Column(
+        children: [
+          header,
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            alignment: Alignment.centerLeft,
+            child: Text(wall.content),
+          ),
+        ],
       ),
     );
   }

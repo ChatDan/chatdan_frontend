@@ -93,7 +93,7 @@ class _WallPageState extends State<WallPage> {
             ],
           ),
           body: _buildListView(context),
-          bottomNavigationBar: BottomBar(index: 1),
+          bottomNavigationBar: const BottomBar(index: 1),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateWallPage())).then((value) {
@@ -144,16 +144,21 @@ class WallWidget extends StatelessWidget {
         child: header,
       );
     }
-    return Card(
-      child: Column(
-        children: [
-          header,
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            alignment: Alignment.centerLeft,
-            child: Text(wall.content),
-          ),
-        ],
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => CreateWallPage(replyToWall: wall)));
+      },
+      child: Card(
+        child: Column(
+          children: [
+            header,
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              alignment: Alignment.centerLeft,
+              child: Text(wall.content),
+            ),
+          ],
+        ),
       ),
     );
   }

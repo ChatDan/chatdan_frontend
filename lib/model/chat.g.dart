@@ -11,13 +11,9 @@ Chat _$ChatFromJson(Map<String, dynamic> json) => Chat(
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       oneUserId: json['one_user_id'] as int,
-      oneUser: json['one_user'] == null
-          ? null
-          : User.fromJson(json['one_user'] as Map<String, dynamic>),
+      oneUser: User.fromJson(json['one_user'] as Map<String, dynamic>),
       anotherUserId: json['another_user_id'] as int,
-      anotherUser: json['another_user'] == null
-          ? null
-          : User.fromJson(json['another_user'] as Map<String, dynamic>),
+      anotherUser: User.fromJson(json['another_user'] as Map<String, dynamic>),
       lastMessageContent: json['last_message_content'] as String? ?? '',
       messageCount: json['message_count'] as int? ?? 0,
     );

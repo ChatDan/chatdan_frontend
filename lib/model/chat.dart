@@ -10,9 +10,9 @@ class Chat {
   DateTime createdAt;
   DateTime updatedAt;
   final int oneUserId;
-  final User? oneUser;
+  final User oneUser;
   final int anotherUserId;
-  final User? anotherUser;
+  final User anotherUser;
   final String lastMessageContent;
   int messageCount;
 
@@ -21,9 +21,9 @@ class Chat {
       required this.createdAt,
       required this.updatedAt,
       required this.oneUserId,
-      this.oneUser,
+      required this.oneUser,
       required this.anotherUserId,
-      this.anotherUser,
+      required this.anotherUser,
       this.lastMessageContent = '',
       this.messageCount = 0});
 

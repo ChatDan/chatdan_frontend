@@ -18,10 +18,10 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
   final _topicContextController = TextEditingController();
   final _tagController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
-  String _divisionId = "1";
+  String _divisionId = '1';
 
   // String host = HostModel.ipHost;
-  String _responseBody = '';
+  final String _responseBody = '';
   bool _is_anonymous = false;
 
   @override
@@ -115,7 +115,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
       toolbarHeight: 35,
       title: Center(
         child: Text(
-          "发布帖子",
+          '发布帖子',
           style: TextStyle(height: 8),
         ),
       ),
@@ -190,31 +190,31 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
       items: <DropdownMenuItem<String>>[
         DropdownMenuItem(
           child: Text(
-            "分区1",
-            style: TextStyle(color: _divisionId == "1" ? Colors.blue : Colors.grey),
+            '分区1',
+            style: TextStyle(color: _divisionId == '1' ? Colors.blue : Colors.grey),
           ),
-          value: "1",
+          value: '1',
         ),
         DropdownMenuItem(
           child: Text(
-            "分区2",
-            style: TextStyle(color: _divisionId == "2" ? Colors.blue : Colors.grey),
+            '分区2',
+            style: TextStyle(color: _divisionId == '2' ? Colors.blue : Colors.grey),
           ),
-          value: "2",
+          value: '2',
         ),
         DropdownMenuItem(
           child: Text(
-            "分区3",
-            style: TextStyle(color: _divisionId == "3" ? Colors.blue : Colors.grey),
+            '分区3',
+            style: TextStyle(color: _divisionId == '3' ? Colors.blue : Colors.grey),
           ),
-          value: "3",
+          value: '3',
         ),
         DropdownMenuItem(
           child: Text(
-            "分区4",
-            style: TextStyle(color: _divisionId == "4" ? Colors.blue : Colors.grey),
+            '分区4',
+            style: TextStyle(color: _divisionId == '4' ? Colors.blue : Colors.grey),
           ),
-          value: "4",
+          value: '4',
         ),
       ],
       onChanged: (selectValue) {
@@ -222,7 +222,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
           _divisionId = (selectValue) as String;
         });
       },
-      value: "1",
+      value: '1',
       style: new TextStyle(
           //设置文本框里面文字的样式
           color: Colors.blue,
@@ -233,7 +233,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
 
   Widget buildAnonySwitch() {
     return SwitchListTile(
-        title: Text("匿名"),
+        title: Text('匿名'),
         value: _is_anonymous,
         onChanged: (value) {
           setState(() {

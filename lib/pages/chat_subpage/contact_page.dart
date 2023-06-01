@@ -83,7 +83,7 @@ class ContactsPageState extends State<ContactsPage> {
                 children: <Widget>[
                   Padding(padding: EdgeInsets.only(left: 10, right: 10), child: Icon(Icons.search, color: Colors.teal)),
                   Text(
-                    "搜索用户",
+                    '搜索用户',
                     style: TextStyle(color: Colors.grey, fontSize: 15),
                   )
                 ],
@@ -149,9 +149,9 @@ class ContactsPageState extends State<ContactsPage> {
     var days = now.difference(time).inDays;
     String updateTime = '';
     if (days >= 1) {
-      updateTime = "$month月$day日";
+      updateTime = '$month月$day日';
     } else {
-      updateTime = "$hour:$minute";
+      updateTime = '$hour:$minute';
     }
     //未添加显示是否已读功能
     // Color isread;
@@ -164,7 +164,7 @@ class ContactsPageState extends State<ContactsPage> {
     return ListTile(
       title: Row(
         children: [
-          chat.anotherUser != null ? Text(chat.anotherUser!.username) : Text('user'),
+          if (chat.anotherUser != null) Text(chat.anotherUser!.username) else Text('user'),
           Text(
             updateTime,
             style: TextStyle(fontSize: 10),

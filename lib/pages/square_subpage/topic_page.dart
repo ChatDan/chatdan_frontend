@@ -1,6 +1,9 @@
+import 'package:chatdan_frontend/model/comment.dart';
 import 'package:chatdan_frontend/model/topic.dart';
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class TopicPage extends StatefulWidget {
   final Topic topic;
@@ -11,10 +14,15 @@ class TopicPage extends StatefulWidget {
   State<TopicPage> createState() => _TopicPageState();
 }
 
-class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixin {
-  var commentList = [];
+class _TopicPageState extends State<TopicPage>
+    with AutomaticKeepAliveClientMixin {
+  List<Comment> commentList = [];
   Topic? _topic;
-  ScrollController _scrollController = ScrollController();
+  static const _pageSize = 10;
+  static const _pageNum = 1;
+  final PagingController<DateTime?, Comment> _pagingController =
+      PagingController(firstPageKey: null);
+  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
 
   @override
@@ -39,37 +47,35 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
     'disliked': false,
   };
 
-  void refreshcommentList() async {
-    // try {
-    //   final response = await http.get(
-    //     Uri.parse("http://$host/view/list"),
-    //     headers: {
-    //       'Authorization': 'Bearer',
-    //     },
-    //   ).timeout(const Duration(seconds: 30));
-    //   if (response.statusCode == 200) {
-    //     commentList.clear();
-    //     final List Json = json.decode(response.body)['result']['list'];
-    //     setState(() {
-    //       commentList = Json;
-    //     });
-    //   }
-    // } catch (e) {
-    //   print(e);
-    //   throw Exception('Failed to load');
+  void _fetchComment() async {
+    // List Json = [];
+    // // Json.add(testTopicJson);
+    // for (var i = 1; i < 10; i++) {
+    //   Json.add(testCommentJson);
     // }
-    List Json = [];
-    // Json.add(testTopicJson);
-    for (var i = 1; i < 10; i++) {
-      Json.add(testCommentJson);
+    // setState(() {
+    //   commentList = Json;
+    // });
+    try {
+      List<Comment>? newComments;
+      newComments = await ChatDanRepository().loadComments(
+          pageNum: _pageNum, pageSize: _pageSize, topicId: _topic!.id);
+      newComments ??= [];
+      commentList = newComments;
+
+      // final isLastPage = newComments.length < _pageSize;
+      // if (isLastPage) {
+      //   _pagingController.appendLastPage(newComments);
+      // } else {
+      //   _pagingController.appendPage(newComments, newComments.last.createdAt);
+      // }
+    } catch (e) {
+      _pagingController.error = e;
     }
-    setState(() {
-      commentList = Json;
-    });
   }
 
   Future<Null> _onRefresh() async {
-    refreshcommentList();
+    _fetchComment();
   }
 
   Future _getMorecommentList() async {
@@ -78,15 +84,15 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
         isLoading = true;
       });
       // await Future.delayed(Duration(seconds: 1), () {
-      setState(() {
+      setState(() async {
         // list.addAll(List.generate(5, (i) => '第$_page次上拉来的数据'));
-        // TODO: get some new topics
-        List newJson = [];
-        for (var i = 1; i < 10; i++) {
-          newJson.add(testCommentJson);
-        }
-        commentList.addAll(newJson);
-        // _page++;
+        // TODO: get some new Comments
+
+        List<Comment>? newComments;
+        newComments = await ChatDanRepository().loadComments(
+            pageNum: _pageNum, pageSize: _pageSize, topicId: _topic!.id);
+        newComments ??= [];
+        commentList..addAll(newComments);
         isLoading = false;
       });
     }
@@ -96,19 +102,20 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
   void initState() {
     _topic = widget.topic;
     super.initState();
-    refreshcommentList();
+    _fetchComment();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         _getMorecommentList();
       }
     });
   }
 
-  void _onCreateTopicButtonTapped() {
-    setState(() {
-      GoRouter.of(context).push('/home/send/topic');
-    });
-  }
+  // void _onCreateCommentButtonTapped() {
+  //   setState(() {
+  //     GoRouter.of(context).push('/home/send/');
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -197,57 +204,11 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
   }
 
   Widget buildComments(BuildContext context) {
-    // return RefreshIndicator(
-    //     onRefresh: _onRefresh,
-    //     color: Colors.teal,
-    //     child: ListView.builder(
-    //       // TODO: set length
-    //       itemCount: commentList.length,
-    //       itemBuilder: (context, index) {
-    //         final comment = commentList[index];
-    //         return buildCommentWidget(context, comment);
-    //       },
-    //       controller: _scrollController,
-    //     ));
-    // return Container(
-    // child: ListView.builder(
-    //   // TODO: set length
-    //   itemCount: commentList.length,
-    //   itemBuilder: (context, index) {
-    //     final comment = commentList[index];
-    //     return buildCommentWidget(context, comment);
-    //   },
-    //   controller: _scrollController,
-    // ),
-    // );
-    // return Container(
-    //   margin: EdgeInsets.all(10),
-    //   height: 500,
-    //   decoration: BoxDecoration(boxShadow: [
-    //     BoxShadow(
-    //       color: Colors.grey.withOpacity(0.5),
-    //       spreadRadius: 3,
-    //       blurRadius: 7,
-    //       offset: Offset(0, 3), // changes position of shadow
-    //     ),
-    //   ], color: Colors.white, borderRadius: BorderRadius.circular((20))),
-    //   child: ListView.builder(
-    //       itemCount: commentList.length,
-    //       itemBuilder: (context, index) {
-    //         Map<String, dynamic> comment = commentList[index];
-    //         return buildCommentWidget(context, comment);
-    //       }),
-    // );
-    // return ListView.builder(
-    //     itemCount: commentList.length,
-    //     itemBuilder: (context, index) {
-    //       Map<String, dynamic> comment = commentList[index];
-    //       return buildCommentWidget(context, comment);
-    //     });
     return SliverList(
         delegate: SliverChildBuilderDelegate(
       (context, index) {
-        Map<String, dynamic> comment = commentList[index];
+        Comment comment = commentList[index];
+        print(comment.content);
         return buildCommentWidget(context, comment);
       },
       childCount: commentList.length,
@@ -381,7 +342,7 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
                     children: [
                       buildRowIconButton(
                           // FIXME: change the func into add like num
-                          refreshcommentList,
+                          _fetchComment,
                           Icon(
                             Icons.thumb_up,
                             color: Colors.grey,
@@ -390,7 +351,16 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
                           _topic!.likeCount.toString()),
                       buildRowIconButton(
                           // FIXME: add favor num
-                          refreshcommentList,
+                          _fetchComment,
+                          Icon(
+                            Icons.visibility,
+                            color: Colors.grey,
+                            size: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          _topic!.viewCount.toString()),
+                      buildRowIconButton(
+                          // FIXME: add favor num
+                          _fetchComment,
                           Icon(
                             Icons.star_purple500_outlined,
                             color: Colors.grey,
@@ -405,19 +375,19 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
   }
 
   // 回复元素
-  Widget buildCommentWidget(BuildContext context, comment) {
+  Widget buildCommentWidget(BuildContext context, Comment comment) {
     // get user name
     String commentOwner;
-    bool is_anonymous = comment['is_anonymous'];
+    bool is_anonymous = comment.isAnonymous;
     if (is_anonymous) {
-      commentOwner = comment['anonyname'];
+      commentOwner = comment.anonyname!;
     } else {
       // FIXME: get user name
-      commentOwner = comment['created_at'];
+      commentOwner = "用户";
     }
     // // show anony info
     String anonyInfo = '';
-    if (comment['is_anonymous']) {
+    if (comment.isAnonymous) {
       anonyInfo = '匿名用户';
     }
     return GestureDetector(
@@ -470,7 +440,7 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
                     //   style: TextStyle(fontWeight: FontWeight.bold),
                     // ),
                     Text(
-                      "${comment["content"]}",
+                      comment.content,
                       textAlign: TextAlign.left,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
@@ -553,7 +523,8 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
           ),
         ),
         Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 22),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 22),
             child: Text(
               text,
               maxLines: 1,
@@ -563,7 +534,8 @@ class _TopicPageState extends State<TopicPage> with AutomaticKeepAliveClientMixi
     } else {
       return Row(children: <Widget>[
         Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 22),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 22),
             child: Text(
               text,
               maxLines: 1,

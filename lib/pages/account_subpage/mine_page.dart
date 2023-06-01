@@ -21,7 +21,7 @@ class _MinePageState extends State<MinePage> {
         title: Text('我的'),
       ),
       body: UserProfileWidget(user: user),
-      bottomNavigationBar: BottomBar(index: 4),
+      bottomNavigationBar: const BottomBar(index: 4),
     );
   }
 }

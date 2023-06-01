@@ -50,7 +50,7 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _onRefresh() async {
-    await Future.delayed(Duration(seconds: 1)).then((e) {
+    await Future.delayed(const Duration(seconds: 1)).then((e) {
       setState(() {
         loadMessageList();
       });

@@ -44,7 +44,7 @@ class _CreateWallPageState extends State<CreateWallPage> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             children: [
               SwitchListTile(
-                  title: Text("匿名"),
+                  title: Text('匿名'),
                   value: _isAnonymous,
                   onChanged: (value) {
                     setState(() {

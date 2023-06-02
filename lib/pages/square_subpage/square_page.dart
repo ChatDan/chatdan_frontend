@@ -36,7 +36,9 @@ class _SquarePageState extends State<SquarePage> {
   }
 
   void _onCreateTopicButtonTapped() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateTopicPage())).then((value) {
+    Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const CreateTopicPage()))
+        .then((value) {
       setState(() {});
     });
   }
@@ -105,7 +107,8 @@ class _SquarePageState extends State<SquarePage> {
   // 主体
   Widget buildBodyWidget(BuildContext context) {
     return TabBarView(
-      children: divisionList.map((e) => ListTopicsWidget(divisionId: e.id)).toList(),
+      children:
+          divisionList.map((e) => ListTopicsWidget(divisionId: e.id)).toList(),
     );
   }
 

@@ -119,7 +119,9 @@ class _TopicPageState extends State<TopicPage>
           builder: (context) => CreateCommentPage(
                 topicId: _topic!.id,
               )),
-    );
+    ).then((value) {
+      setState(() {});
+    });
   }
 
   @override

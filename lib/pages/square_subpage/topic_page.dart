@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+import '../account_subpage/profile.dart';
+
 class TopicPage extends StatefulWidget {
   final Topic topic;
 
@@ -89,6 +91,7 @@ class _TopicPageState extends State<TopicPage>
     _topic = widget.topic;
     super.initState();
     _fetchComment();
+    ChatDanRepository().viewATopic(_topic!.id);
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -227,7 +230,7 @@ class _TopicPageState extends State<TopicPage>
       child: Container(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.35,
+          // height: MediaQuery.of(context).size.height * 0.2,
           decoration: BoxDecoration(boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -260,13 +263,13 @@ class _TopicPageState extends State<TopicPage>
                   ),
                   // FIXME: use a widget(icon + text) instead of simple text to show anony
                   // subtitle: Text(topicOwner),
-                  subtitle: buildAnonyButton(topicOwner!, is_anonymous),
+                  subtitle: buildTopicOwnerButton(_topic!),
                 ),
               ),
 
               // 帖子内容展示
               Container(
-                padding: EdgeInsets.only(left: 10),
+                padding: EdgeInsets.all(15),
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,24 +283,12 @@ class _TopicPageState extends State<TopicPage>
                     Text(
                       _topic!.content,
                       textAlign: TextAlign.left,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                      // maxLines: 3,
+                      // overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),
               ),
-
-              // 图片
-              // Container(
-              //     padding: EdgeInsets.only(left: 10),
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Wrap(
-              //       // mainAxisAlignment: MainAxisAlignment.start,
-              //       children: [
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //       ],
-              //     )),
 
               // 元信息（点赞数，收藏数，评论数）
               Container(
@@ -311,7 +302,7 @@ class _TopicPageState extends State<TopicPage>
                           // FIXME: change the func into add like num
                           _fetchComment,
                           Icon(
-                            Icons.thumb_up,
+                            Icons.favorite_border,
                             color: Colors.grey,
                             size: MediaQuery.of(context).size.height * 0.02,
                           ),
@@ -329,7 +320,7 @@ class _TopicPageState extends State<TopicPage>
                           // FIXME: add favor num
                           _fetchComment,
                           Icon(
-                            Icons.star_purple500_outlined,
+                            Icons.star_border,
                             color: Colors.grey,
                             size: MediaQuery.of(context).size.height * 0.02,
                           ),
@@ -361,7 +352,7 @@ class _TopicPageState extends State<TopicPage>
       child: Container(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.35,
+          // height: MediaQuery.of(context).size.height * 0.2,
           decoration: BoxDecoration(boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -373,29 +364,43 @@ class _TopicPageState extends State<TopicPage>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // 用户ID展示（用户名称，是否匿名）
-              Container(
-                child: ListTile(
-                  // title: Text(
-                  //   "${comment["title"]}",
-                  //   textAlign: TextAlign.left,
-                  //   style: TextStyle(fontWeight: FontWeight.bold),
-                  // ),
-                  // // FIXME: use a widget(icon + text) instead of simple text to show anony
-                  // // subtitle: Text(topicOwner),
-                  // subtitle: buildAnonyButton(commentOwner, is_anonymous),
-                  title: Text(
-                    commentOwner,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(anonyInfo),
-                ),
-              ),
-
               // 帖子内容展示
               Container(
-                padding: EdgeInsets.only(left: 10),
+                child: ListTile(
+                  title: buildCommentOwnerButton(comment),
+                  trailing: buildRowIconButton(
+                      // FIXME: change the func into add like num
+                      () {},
+                      Icon(
+                        Icons.favorite_border,
+                        color: Colors.grey,
+                        size: MediaQuery.of(context).size.height * 0.02,
+                      ),
+                      comment.likeCount.toString()),
+                  // subtitle: Text(comment.poster ? '楼主' : ''),
+                ),
+              ), // 元信息（点赞数）
+              // TODO: 目前还没有回复的点赞数
+              // Container(
+              //     padding: EdgeInsets.all(3),
+              //     // height: MediaQuery.of(context).size.height * 0.05,
+              //     width: MediaQuery.of(context).size.width,
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       children: [
+              //         buildRowIconButton(
+              //             // FIXME: change the func into add like num
+              //             () {},
+              //             Icon(
+              //               Icons.thumb_up,
+              //               color: Colors.grey,
+              //               size: MediaQuery.of(context).size.height * 0.02,
+              //             ),
+              //             comment.likeCount.toString()),
+              //       ],
+              //     )),
+              Container(
+                padding: EdgeInsets.all(15),
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,45 +414,12 @@ class _TopicPageState extends State<TopicPage>
                     Text(
                       comment.content,
                       textAlign: TextAlign.left,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                      // maxLines: 3,
+                      // overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),
               ),
-
-              // 图片
-              // Container(
-              //     padding: EdgeInsets.only(left: 10),
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Wrap(
-              //       // mainAxisAlignment: MainAxisAlignment.start,
-              //       children: [
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //       ],
-              //     )),
-
-              // 元信息（点赞数）
-              // TODO: 目前还没有回复的点赞数
-              Container(
-                  padding: EdgeInsets.all(3),
-                  // height: MediaQuery.of(context).size.height * 0.05,
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      buildRowIconButton(
-                          // FIXME: change the func into add like num
-                          () {},
-                          Icon(
-                            Icons.thumb_up,
-                            color: Colors.grey,
-                            size: MediaQuery.of(context).size.height * 0.02,
-                          ),
-                          comment.likeCount.toString()),
-                    ],
-                  )),
             ],
           )),
     );
@@ -468,30 +440,19 @@ class _TopicPageState extends State<TopicPage>
   }
 
   // 匿名用户展示
-  Widget buildAnonyButton(String text, bool is_anonymous) {
-    if (is_anonymous) {
-      // return TextButton.icon(
-      //   onPressed: () {},
-      //   icon: Icon(
-      //     Icons.remove_circle_outline,
-      //     color: Colors.black,
-      //   ),
-      //   label: Text(
-      //     text,
-      //     style: TextStyle(color: Colors.black),
-      //   ),
-      // );
+  Widget buildTopicOwnerButton(Topic article) {
+    if (article.isAnonymous) {
+      final text = article.anonyname!;
       return Row(children: <Widget>[
-        Container(
-          child: Icon(
-            Icons.remove_circle_outline,
-            color: Colors.black,
-            size: 15,
-          ),
+        const Icon(
+          Icons.remove_circle_outline,
+          color: Colors.black,
+          size: 15,
         ),
         Container(
             constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width - 22),
+            padding: EdgeInsets.only(left: 5),
             child: Text(
               text,
               maxLines: 1,
@@ -499,37 +460,94 @@ class _TopicPageState extends State<TopicPage>
             )),
       ]);
     } else {
+      final poster = article.poster!;
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserProfilePage(user: poster)));
+        },
+        child: Row(children: <Widget>[
+          CircleAvatar(
+            backgroundImage:
+                poster.avatar == null ? null : NetworkImage(poster.avatar!),
+            radius: 10,
+          ),
+          Container(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 22),
+              padding: EdgeInsets.only(left: 5),
+              child: Text(
+                poster.username,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
+          // Container(
+          //   child: Icon(
+          //     Icons.remove_circle_outline,
+          //     color: Colors.white,
+          //     size: 15,
+          //   ),
+          // ),
+        ]),
+      );
+    }
+  }
+
+  // 匿名用户展示
+  Widget buildCommentOwnerButton(Comment comment) {
+    if (comment.isAnonymous) {
+      final text = comment.anonyname!;
       return Row(children: <Widget>[
+        const Icon(
+          Icons.remove_circle_outline,
+          color: Colors.black,
+          size: 15,
+        ),
         Container(
             constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width - 22),
+            padding: EdgeInsets.only(left: 5),
             child: Text(
               text,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             )),
-        // Container(
-        //   child: Icon(
-        //     Icons.remove_circle_outline,
-        //     color: Colors.white,
-        //     size: 15,
-        //   ),
-        // ),
       ]);
+    } else {
+      final poster = comment.poster!;
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserProfilePage(user: poster)));
+        },
+        child: Row(children: <Widget>[
+          CircleAvatar(
+            backgroundImage:
+                poster.avatar == null ? null : NetworkImage(poster.avatar!),
+            radius: 10,
+          ),
+          Container(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 22),
+              padding: EdgeInsets.only(left: 5),
+              child: Text(
+                poster.username,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
+          // Container(
+          //   child: Icon(
+          //     Icons.remove_circle_outline,
+          //     color: Colors.white,
+          //     size: 15,
+          //   ),
+          // ),
+        ]),
+      );
     }
   }
-
-//   Widget buildImageCard(String imgUrl) {
-//     return Card(
-//       shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadiusDirectional.circular(10)),
-//       clipBehavior: Clip.antiAlias,
-//       child: Image.network(
-//         imgUrl,
-//         width: 120,
-//         height: 120,
-//         fit: BoxFit.cover,
-//       ),
-//     );
-//   }
 }

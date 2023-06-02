@@ -29,25 +29,6 @@ class _TopicPageState extends State<TopicPage>
   @override
   bool get wantKeepAlive => true;
 
-  // TODO: use load a division
-  // final Map<String, dynamic> testCommentJson = {
-  //   'id': 0,
-  //   'created_at': 'user name',
-  //   'updated_at': 'u',
-  //   'content':
-  //       '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
-  //   'poster_id': 0,
-  //   'topic_id': 0,
-  //   'is_anonymous': true,
-  //   'anonyname': 'anonyed user',
-  //   'ranking': 1,
-  //   'is_owner': false,
-  //   // "like_count": 0,
-  //   // "dislike_count": 0,
-  //   'liked': false,
-  //   'disliked': false,
-  // };
-
   void _fetchComment() async {
     // List Json = [];
     // // Json.add(testTopicJson);
@@ -62,7 +43,9 @@ class _TopicPageState extends State<TopicPage>
       newComments = await ChatDanRepository().loadComments(
           pageNum: _pageNum, pageSize: _pageSize, topicId: _topic!.id);
       newComments ??= [];
-      commentList = newComments;
+      setState(() {
+        commentList = newComments!;
+      });
 
       // final isLastPage = newComments.length < _pageSize;
       // if (isLastPage) {
@@ -151,7 +134,7 @@ class _TopicPageState extends State<TopicPage>
       backgroundColor: Colors.white,
       elevation: 0,
       // centerTitle: true,
-      toolbarHeight: 35,
+      // toolbarHeight: 35,
       title: Text(
         '',
         style: TextStyle(height: 8),
@@ -161,27 +144,6 @@ class _TopicPageState extends State<TopicPage>
             GoRouter.of(context).pop();
           },
           icon: Icon(Icons.arrow_back_ios_new)),
-      // actions: <Widget>[
-      //   //导航条右方 类似rightBarItem
-      //   IconButton(
-      //     icon: Icon(Icons.search),
-      //     onPressed: () {},
-      //   )
-      // ],
-      // bottom: const TabBar(
-      //   isScrollable: true, //可滚动
-      //   indicatorColor: Color.fromARGB(0, 0, 0, 0), //指示器的颜色
-      //   labelColor: Colors.black, //选中文字颜色
-      //   unselectedLabelColor: Colors.grey, //未选中文字颜色
-      //   // indicatorSize: TabBarIndicatorSize.label, //指示器与文字等宽
-      //   labelStyle: TextStyle(fontSize: 15.0),
-      //   unselectedLabelStyle: TextStyle(fontSize: 12.0),
-      //   tabs: <Widget>[
-      //     Tab(text: "综合"),
-      //     Tab(text: "课程"),
-      //     Tab(text: "热点"),
-      //   ],
-      // ),
     );
   }
 
@@ -208,7 +170,6 @@ class _TopicPageState extends State<TopicPage>
         delegate: SliverChildBuilderDelegate(
       (context, index) {
         Comment comment = commentList[index];
-        print(comment.content);
         return buildCommentWidget(context, comment);
       },
       childCount: commentList.length,
@@ -383,7 +344,7 @@ class _TopicPageState extends State<TopicPage>
       commentOwner = comment.anonyname!;
     } else {
       // FIXME: get user name
-      commentOwner = "用户";
+      commentOwner = comment.poster!.username;
     }
     // // show anony info
     String anonyInfo = '';
@@ -472,7 +433,7 @@ class _TopicPageState extends State<TopicPage>
               //       children: [
               //         buildRowIconButton(
               //             // FIXME: change the func into add like num
-              //             refreshcommentList,
+              //             () {},
               //             Icon(
               //               Icons.thumb_up,
               //               color: Colors.grey,

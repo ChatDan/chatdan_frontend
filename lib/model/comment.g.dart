@@ -12,6 +12,9 @@ Comment _$CommentFromJson(Map<String, dynamic> json) => Comment(
       updatedAt: DateTime.parse(json['updated_at'] as String),
       topicId: json['topic_id'] as int,
       posterId: json['poster_id'] as int?,
+      poster: json['poster'] == null
+          ? null
+          : User.fromJson(json['poster'] as Map<String, dynamic>),
       content: json['content'] as String? ?? '',
       isAnonymous: json['is_anonymous'] as bool,
       anonyname: json['anonyname'] as String?,
@@ -29,6 +32,7 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
       'updated_at': instance.updatedAt.toIso8601String(),
       'topic_id': instance.topicId,
       'poster_id': instance.posterId,
+      'poster': instance.poster,
       'content': instance.content,
       'is_anonymous': instance.isAnonymous,
       'anonyname': instance.anonyname,

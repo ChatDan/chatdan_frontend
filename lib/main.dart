@@ -8,14 +8,17 @@ import 'package:chatdan_frontend/pages/wall_subpage/wall_page.dart';
 import 'package:chatdan_frontend/provider/chatdan_provider.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // load access_token
   await ChatDanRepository().loadAccessToken();
+  Intl.defaultLocale = 'zh_CN';
 
   runApp(const MyApp());
 }
@@ -71,6 +74,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Widget myApp = MaterialApp.router(
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('es'), // Spanish
+        Locale('zh'),
+      ],
+      locale: const Locale('zh'),
       title: 'ChatDan',
       theme: ThemeData(
         primarySwatch: Colors.blue,

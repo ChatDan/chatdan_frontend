@@ -1,15 +1,17 @@
 name: chatdan_frontend
-description: A Flutter project for user registration and profile display.
+description: ChatDan Frontend
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 0.0.1+2
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
@@ -22,6 +24,7 @@ dependencies:
   url_launcher: ^6.0.9
 #  flutter_clipboard_manager: ^0.1.6
   infinite_scroll_pagination: ^3.2.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

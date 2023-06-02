@@ -1,9 +1,13 @@
+import 'package:chatdan_frontend/model/wall.dart';
+import 'package:chatdan_frontend/pages/wall_subpage/wall_page.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 class CreateWallPage extends StatefulWidget {
-  const CreateWallPage({super.key});
+  final Wall? replyToWall;
+
+  const CreateWallPage({this.replyToWall, super.key});
 
   @override
   State createState() => _CreateWallPageState();
@@ -35,16 +39,17 @@ class _CreateWallPageState extends State<CreateWallPage> {
 
   @override
   Widget build(BuildContext context) {
+    final title = widget.replyToWall == null ? '发送表白墙' : '回复表白墙';
     return Scaffold(
-        appBar: AppBar(
-            title: const Text('发送表白墙'),
-            actions: [IconButton(onPressed: _uploadTopic, icon: Icon(Icons.send_outlined))]),
+        appBar:
+            AppBar(title: Text(title), actions: [IconButton(onPressed: _uploadTopic, icon: const Icon(Icons.send_outlined))]),
         body: Form(
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             children: [
+              if (widget.replyToWall != null) WallWidget(widget.replyToWall!),
               SwitchListTile(
-                  title: Text('匿名'),
+                  title: const Text('匿名'),
                   value: _isAnonymous,
                   onChanged: (value) {
                     setState(() {
@@ -67,6 +72,10 @@ class _CreateWallPageState extends State<CreateWallPage> {
                     return null;
                   },
                 ),
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 10),
+                child: const Text('注：您发布的表白墙会在明天展示'),
               ),
             ],
           ),

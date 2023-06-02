@@ -6,20 +6,18 @@ part 'message.g.dart';
 class Message {
   final int id;
   final DateTime createdAt;
-  DateTime updatedAt;
   final int fromUserId;
   final int toUserId;
   String content;
-  bool isOwner;
+  bool isMe;
 
   Message(
       {required this.id,
       required this.createdAt,
-      required this.updatedAt,
       required this.fromUserId,
       required this.toUserId,
       this.content = '',
-      required this.isOwner});
+      required this.isMe});
 
   factory Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
 

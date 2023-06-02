@@ -1,3 +1,4 @@
+import 'package:chatdan_frontend/pages/chat_subpage/chat_page.dart';
 import 'package:chatdan_frontend/pages/setting.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
@@ -79,11 +80,17 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
     }
     if (widget.user.id != ChatDanRepository().provider.userInfo!.id) {
       return Column(
-        children: const <Widget>[
+        children: <Widget>[
           Divider(),
           ListTile(
             leading: Icon(Icons.message),
             title: Text('发消息'),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ChatPage(widget.user)));
+            },
           ),
           ListTile(
             leading: Icon(Icons.star),

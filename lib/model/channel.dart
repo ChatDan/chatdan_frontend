@@ -8,12 +8,16 @@ class Channel {
   final int postId;
   String content;
   final bool isOwner;
+  final bool isPostOwner;
+  final bool isBoxOwner;
 
   Channel(
       {required this.id,
       required this.postId,
       this.content = '',
-      required this.isOwner});
+      required this.isOwner,
+      this.isPostOwner = false,
+      this.isBoxOwner = false});
 
   factory Channel.fromJson(Map<String, dynamic> json) => _$ChannelFromJson(json);
 

@@ -31,16 +31,14 @@ class _AskboxPageState extends State<AskboxPage> {
         isLoading = true;
       });
 
+      final userId = widget.ownerId;
+
       final fetchedBoxes = await ChatDanRepository()
-              .loadMessageBoxes(pageNum: 1, pageSize: 10) ??
+          .loadMessageBoxes(pageNum: 1, pageSize: 10, owner: userId) ??
           [];
 
-      final userId = widget.ownerId;
-      final filteredBoxes =
-          fetchedBoxes.where((box) => box.ownerId == userId).toList();
-
       setState(() {
-        boxes = filteredBoxes;
+        boxes = fetchedBoxes;
       });
     } catch (e) {
       if (e is DioError && e.error is NotLoginError && mounted) {
@@ -77,68 +75,72 @@ class _AskboxPageState extends State<AskboxPage> {
         onRefresh: _refreshMessageBoxes,
         child: isLoading
             ? Center(
-                child: CircularProgressIndicator(),
-              )
+          child: CircularProgressIndicator(),
+        )
             : boxes.isEmpty
-                ? const Center(
-                    child: Text(
-                      '该用户尚未开通提问箱',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: boxes.length,
-                    itemBuilder: (context, index) {
-                      final box = boxes[index];
-                      return GestureDetector(
-                        onTap: () {
-                          // 跳转到对应的提问箱内页
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AskboxDetailPage(box.title, box.id),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          margin:
-                              const EdgeInsets.fromLTRB(10, 5, 10, 10), // 调整边距
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 2,
-                                offset: Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(box.title),
-                          ),
-                        ),
-                      );
-                    },
+            ? const Center(
+          child: Text(
+            '该用户尚未开通提问箱',
+            style: TextStyle(fontSize: 20),
+          ),
+        )
+            : ListView.builder(
+          itemCount: boxes.length,
+          itemBuilder: (context, index) {
+            final box = boxes[index];
+            return GestureDetector(
+              onTap: () {
+                // 跳转到对应的提问箱内页
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AskboxDetailPage(box.title, box.id),
                   ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                margin:
+                const EdgeInsets.fromLTRB(10, 5, 10, 10), // 调整边距
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 2,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(box.title),
+                ),
+              ),
+            );
+          },
+        ),
       ),
       bottomNavigationBar: const BottomBar(index: 2),
       floatingActionButton:
-          widget.ownerId == ChatDanRepository().provider.userInfo!.id
-              ? FloatingActionButton(
-                  onPressed: () {
-                    // 创建提问箱
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CreateAskboxPage(),
-                      ),
-                    );
-                  },
-                  child: const Icon(Icons.add),
-                )
-              : null,
+      widget.ownerId == ChatDanRepository().provider.userInfo!.id
+          ? FloatingActionButton(
+        onPressed: () {
+          // 创建提问箱
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateAskboxPage(),
+            ),
+          ).then((value) {
+            setState(() {
+              _fetchMessageBoxes();
+            });
+          });
+        },
+        child: const Icon(Icons.add),
+      )
+          : null,
     );
   }
 }

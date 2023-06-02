@@ -65,13 +65,13 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         child: Column(
           children: [
             SwitchListTile(
-                  title: const Text('匿名'),
-                  value: _isAnonymous,
-                  onChanged: (value) {
-                    setState(() {
-                      _isAnonymous = value;
-                    });
-                  }
+                title: const Text('匿名'),
+                value: _isAnonymous,
+                onChanged: (value) {
+                  setState(() {
+                    _isAnonymous = value;
+                  });
+                }
             ),
             TextFormField(
               controller: _inputController,

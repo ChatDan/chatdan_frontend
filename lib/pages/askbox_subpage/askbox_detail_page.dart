@@ -40,7 +40,7 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
   Future<List<Post>> fetchPosts() async {
     try {
       return await ChatDanRepository()
-              .loadPosts(pageNum: 1, pageSize: 10, messageBoxId: widget.id) ??
+          .loadPosts(pageNum: 1, pageSize: 10, messageBoxId: widget.id) ??
           [];
     } catch (e) {
       if (e is DioError && e.error is NotLoginError && mounted) {
@@ -150,7 +150,7 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            post.isAnonymous ? '匿名用户' : post.anonyname ?? 'chatdan',
+                            post.isAnonymous ? '匿名用户' : post.poster!.username,
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 8),

@@ -24,7 +24,7 @@ class _CreateAskboxPageState extends State<CreateAskboxPage> {
   Future<void> _createAskbox() async {
     // 获取文本框内的提问箱名字
     String askboxName = _askboxNameController.text;
-    
+
     // 创建新的提问箱
     try {
       await ChatDanRepository().createAMessageBox(askboxName);

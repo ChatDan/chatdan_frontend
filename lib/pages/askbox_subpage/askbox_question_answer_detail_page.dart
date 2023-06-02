@@ -127,7 +127,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
           postId: widget.post.id,
           content: newChannelContent,
           isOwner:
-              widget.post.posterId == ChatDanRepository().provider.userInfo!.id,
+          widget.post.posterId == ChatDanRepository().provider.userInfo!.id,
         );
         _addChannel(newChannel);
       }
@@ -145,7 +145,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
           postId: widget.post.id,
           content: newChannelContent,
           isOwner:
-              widget.post.posterId == ChatDanRepository().provider.userInfo!.id,
+          widget.post.posterId == ChatDanRepository().provider.userInfo!.id,
         );
         _addChannel(newChannel);
       }

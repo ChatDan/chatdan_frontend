@@ -1,5 +1,6 @@
 import 'package:chatdan_frontend/model/comment.dart';
 import 'package:chatdan_frontend/model/topic.dart';
+import 'package:chatdan_frontend/pages/square_subpage/create_comment_page.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -29,23 +30,23 @@ class _TopicPageState extends State<TopicPage>
   bool get wantKeepAlive => true;
 
   // TODO: use load a division
-  final Map<String, dynamic> testCommentJson = {
-    'id': 0,
-    'created_at': 'user name',
-    'updated_at': 'u',
-    'content':
-        '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
-    'poster_id': 0,
-    'topic_id': 0,
-    'is_anonymous': true,
-    'anonyname': 'anonyed user',
-    'ranking': 1,
-    'is_owner': false,
-    // "like_count": 0,
-    // "dislike_count": 0,
-    'liked': false,
-    'disliked': false,
-  };
+  // final Map<String, dynamic> testCommentJson = {
+  //   'id': 0,
+  //   'created_at': 'user name',
+  //   'updated_at': 'u',
+  //   'content':
+  //       '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
+  //   'poster_id': 0,
+  //   'topic_id': 0,
+  //   'is_anonymous': true,
+  //   'anonyname': 'anonyed user',
+  //   'ranking': 1,
+  //   'is_owner': false,
+  //   // "like_count": 0,
+  //   // "dislike_count": 0,
+  //   'liked': false,
+  //   'disliked': false,
+  // };
 
   void _fetchComment() async {
     // List Json = [];
@@ -111,34 +112,31 @@ class _TopicPageState extends State<TopicPage>
     });
   }
 
-  // void _onCreateCommentButtonTapped() {
-  //   setState(() {
-  //     GoRouter.of(context).push('/home/send/');
-  //   });
-  // }
+  void _onCreateCommentButtonTapped() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => CreateCommentPage(
+                topicId: _topic!.id,
+              )),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     // _getTopic(widget.topicId);
-    return DefaultTabController(
-        //导航栏的长度
-        length: 3,
-        child: Scaffold(
-          appBar: buildAppBar(context),
-          body: buildBodyWidget(context),
-          // TODO: a bottom bar with comment, like and favor
-          // bottomNavigationBar: BottomBar(index: 0),
-          // floatingActionButton: FloatingActionButton(
-          //   child: Icon(
-          //     Icons.add,
-          //     color: Colors.white,
-          //   ),
-          //   // TODO: add action to the button
-          //   onPressed: () {
-          //     _onCreateTopicButtonTapped();
-          //   },
-          //   backgroundColor: Colors.teal,
-          // ),
+    return Scaffold(
+        appBar: buildAppBar(context),
+        body: buildBodyWidget(context),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _onCreateCommentButtonTapped();
+          },
+          backgroundColor: Colors.teal,
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
         ));
   }
 

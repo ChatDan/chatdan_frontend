@@ -1,5 +1,6 @@
 import 'package:chatdan_frontend/model/topic.dart';
 import 'package:chatdan_frontend/pages/account_subpage/profile.dart';
+import 'package:chatdan_frontend/pages/square_subpage/create_comment_page.dart';
 import 'package:chatdan_frontend/pages/square_subpage/topic_page.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,14 @@ class _TopicWidgetState extends State<TopicWidget> {
   Widget build(BuildContext context) {
     final article = widget.topic;
     String topicOwner;
+    _createCommentInSquare() {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CreateCommentPage(
+                    topicId: article.id,
+                  )));
+    }
 
     // get user name
     if (article.isAnonymous) {
@@ -35,7 +44,8 @@ class _TopicWidgetState extends State<TopicWidget> {
     int topicId = article.id;
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => TopicPage(topic: article)));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => TopicPage(topic: article)));
       },
       child: Container(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
@@ -148,7 +158,7 @@ class _TopicWidgetState extends State<TopicWidget> {
                           article.likeCount.toString()),
                       buildRowIconButton(
                           // FIXME: direct comment
-                          () {},
+                          _createCommentInSquare,
                           Icon(
                             Icons.message,
                             color: Colors.grey,
@@ -192,7 +202,8 @@ class _TopicWidgetState extends State<TopicWidget> {
           size: 15,
         ),
         Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 22),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 22),
             padding: EdgeInsets.only(left: 5),
             child: Text(
               text,
@@ -204,15 +215,20 @@ class _TopicWidgetState extends State<TopicWidget> {
       final poster = article.poster!;
       return GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage(user: poster)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserProfilePage(user: poster)));
         },
         child: Row(children: <Widget>[
           CircleAvatar(
-            backgroundImage: poster.avatar == null ? null : NetworkImage(poster.avatar!),
+            backgroundImage:
+                poster.avatar == null ? null : NetworkImage(poster.avatar!),
             radius: 10,
           ),
           Container(
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 22),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 22),
               padding: EdgeInsets.only(left: 5),
               child: Text(
                 poster.username,

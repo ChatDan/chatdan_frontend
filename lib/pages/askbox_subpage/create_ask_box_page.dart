@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../repository/chatdan_repository.dart';
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 
 
 class CreateAskboxPage extends StatefulWidget {
@@ -46,7 +46,7 @@ class _CreateAskboxPageState extends State<CreateAskboxPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Askbox'),
+        title: const Text('新建提问箱'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16),
@@ -59,10 +59,10 @@ class _CreateAskboxPageState extends State<CreateAskboxPage> {
                 labelText: '新提问箱名',
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _createAskbox,
-              child: Text('创建新提问箱'),
+              child: const Text('创建新提问箱'),
             ),
           ],
         ),

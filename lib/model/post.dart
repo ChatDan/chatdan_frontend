@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import 'channel.dart';
+import 'user.dart';
 
 part 'post.g.dart';
 
@@ -8,6 +9,7 @@ part 'post.g.dart';
 class Post {
   final int id;
   final int posterId;
+  final User? poster;
   String content;
   String visibility;
   final bool isOwner;
@@ -20,6 +22,7 @@ class Post {
   Post(
       {required this.id,
       required this.posterId,
+      required this.poster,
       this.content = '',
       required this.visibility,
       required this.isOwner,
@@ -34,8 +37,7 @@ class Post {
   Map<String, dynamic> toJson() => _$PostToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      (other is Post) && id == other.id;
+  bool operator ==(Object other) => (other is Post) && id == other.id;
 
   @override
   int get hashCode => id;

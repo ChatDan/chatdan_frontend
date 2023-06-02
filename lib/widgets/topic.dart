@@ -19,86 +19,108 @@ class TopicWidget extends StatefulWidget {
 }
 
 class _TopicWidgetState extends State<TopicWidget> {
+  // final article = widget.topic;
+  // String topicOwner;
+  late final article;
+  late int topicId;
+  late int _likeCount;
+  late bool _isLiked;
+  late int _commentCount;
+  late int _favorCount;
+  late bool _isfavored;
+
+  @override
+  void initState() {
+    article = widget.topic;
+    topicId = article.id;
+    _likeCount = article.likeCount;
+    _isLiked = article.liked;
+    _commentCount = article.commentCount;
+    _favorCount = article.favoriteCount;
+    _isfavored = article.favored;
+  }
+
+  void _createCommentInSquare() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CreateCommentPage(
+                  topicId: topicId,
+                ))).then((value) {
+      setState(() {
+        _commentCount = _commentCount + 1;
+      });
+    });
+  }
+
+  void _likeTopicInSquare() {
+    try {
+      if (_isLiked == false) {
+        // like a topic
+        // ChatDanRepository().likeATopic(article.id).then((value) {
+        //   setState(() {
+        //     _likeCount += 1;
+        //   });
+        // });
+        setState(() {
+          _likeCount = _likeCount + 1;
+          _isLiked = true;
+        });
+        ChatDanRepository().likeATopic(topicId);
+      } else {
+        // dislike a topic
+        // ChatDanRepository().dislikeATopic(article.id).then((value) {
+        //   setState(() {
+        //     _likeCount -= 1;
+        //   });
+        // });
+        ChatDanRepository().unlikeATopic(topicId);
+        setState(() {
+          _likeCount = _likeCount - 1;
+          _isLiked = false;
+        });
+      }
+    } catch (e) {
+      // do nothing
+    }
+  }
+
+  void _favorTopicInSquare() {
+    try {
+      if (_isfavored == false) {
+        // like a topic
+        // ChatDanRepository().likeATopic(article.id).then((value) {
+        //   setState(() {
+        //     _likeCount += 1;
+        //   });
+        // });
+        ChatDanRepository().favorATopic(topicId);
+        setState(() {
+          _favorCount = _favorCount + 1;
+          _isfavored = true;
+        });
+      } else {
+        // dislike a topic
+        // ChatDanRepository().dislikeATopic(article.id).then((value) {
+        //   setState(() {
+        //     _likeCount -= 1;
+        //   });
+        // });
+        ChatDanRepository().unfavorATopic(topicId);
+        setState(() {
+          _favorCount = _favorCount - 1;
+          _isfavored = false;
+        });
+      }
+    } catch (e) {
+      // do nothing
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final article = widget.topic;
     String topicOwner;
-    int _likeCount = article.likeCount;
-    bool _isLiked = article.liked;
-    int _commentCount = article.commentCount;
-    int _favorCount = article.favoriteCount;
-    bool _isfavored = article.favored;
-
-    _createCommentInSquare() {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => CreateCommentPage(
-                    topicId: article.id,
-                  ))).then((value) {
-        setState(() {});
-      });
-    }
-
-    _likeTopicInSquare() {
-      try {
-        if (_isLiked == false) {
-          // like a topic
-          // ChatDanRepository().likeATopic(article.id).then((value) {
-          //   setState(() {
-          //     _likeCount += 1;
-          //   });
-          // });
-          ChatDanRepository().likeATopic(article.id);
-          setState(() {
-            _likeCount = _likeCount + 1;
-          });
-        } else {
-          // dislike a topic
-          // ChatDanRepository().dislikeATopic(article.id).then((value) {
-          //   setState(() {
-          //     _likeCount -= 1;
-          //   });
-          // });
-          ChatDanRepository().unlikeATopic(article.id);
-          setState(() {
-            _likeCount = _likeCount - 1;
-          });
-        }
-      } catch (e) {
-        // do nothing
-      }
-    }
-
-    _favorTopicInSquare() {
-      try {
-        if (_isfavored == false) {
-          // like a topic
-          // ChatDanRepository().likeATopic(article.id).then((value) {
-          //   setState(() {
-          //     _likeCount += 1;
-          //   });
-          // });
-          ChatDanRepository().favorATopic(article.id);
-          setState(() {
-            _favorCount = _favorCount + 1;
-          });
-        } else {
-          // dislike a topic
-          // ChatDanRepository().dislikeATopic(article.id).then((value) {
-          //   setState(() {
-          //     _likeCount -= 1;
-          //   });
-          // });
-          ChatDanRepository().unfavorATopic(article.id);
-          setState(() {
-            _favorCount = _favorCount - 1;
-          });
-        }
-      } catch (e) {
-        // do nothing
-      }
-    }
+    // topicId = article.id;
 
     // get user name
     if (article.isAnonymous) {
@@ -106,12 +128,6 @@ class _TopicWidgetState extends State<TopicWidget> {
     } else {
       topicOwner = article.poster!.username;
     }
-    // // show anony info
-    // String anonyInfo = "";
-    // if (article['is_anonymous']) {
-    //   anonyInfo = "匿名用户";
-    // }
-    int topicId = article.id;
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
@@ -135,17 +151,6 @@ class _TopicWidgetState extends State<TopicWidget> {
               // 用户ID展示（用户名称，是否匿名）
               Container(
                 child: ListTile(
-                  // leading: Card(
-                  //   shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadiusDirectional.circular(10)),
-                  //   clipBehavior: Clip.antiAlias,
-                  //   child: Image.network(
-                  //     'http://q2.qlogo.cn/headimg_dl?dst_uin=1019383856&spec=100',
-                  //     width: 40,
-                  //     height: 40,
-                  //     fit: BoxFit.cover,
-                  //   ),
-                  // ),
                   title: Text(
                     article.title,
                     textAlign: TextAlign.left,
@@ -193,21 +198,21 @@ class _TopicWidgetState extends State<TopicWidget> {
               //     )),
 
               // tags
-              Container(
-                alignment: Alignment(-1, 0),
-                padding: EdgeInsets.all(5),
-                child: Wrap(
-                  spacing: 7,
-                  children: article.tags
-                          ?.map((e) => Chip(
-                                label: Text(e.name),
-                                // labelPadding: EdgeInsets.only(
-                                //     left: 2, right: 2, top: -5, bottom: -5),
-                              ))
-                          .toList() ??
-                      [],
-                ),
-              ),
+              // Container(
+              //   alignment: Alignment(-1, 0),
+              //   padding: EdgeInsets.all(5),
+              //   child: Wrap(
+              //     spacing: 7,
+              //     children: article.tags
+              //             ?.map((e) => Chip(
+              //                   label: Text(e.name),
+              //                   // labelPadding: EdgeInsets.only(
+              //                   //     left: 2, right: 2, top: -5, bottom: -5),
+              //                 ))
+              //             .toList() ??
+              //         [],
+              //   ),
+              // ),
 
               // 元信息（点赞数，收藏数，评论数）
               Container(

@@ -1,3 +1,4 @@
+import 'dart:core';
 import 'dart:io';
 
 import 'package:chatdan_frontend/model/message_box.dart';
@@ -35,8 +36,7 @@ class ChatDanRepository {
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       receiveDataWhenStatusError: true,
-      validateStatus: (int? status) =>
-          status != null && status >= 200 && status < 300,
+      validateStatus: (int? status) => status != null && status >= 200 && status < 300,
     ),
   );
 
@@ -45,8 +45,7 @@ class ChatDanRepository {
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
           if (_provider.accessToken != null) {
-            options.headers['Authorization'] =
-                'Bearer ${_provider.accessToken}';
+            options.headers['Authorization'] = 'Bearer ${_provider.accessToken}';
           }
           return handler.next(options);
         },
@@ -81,8 +80,7 @@ class ChatDanRepository {
               print(error.error.toString());
               break;
           }
-          if (error.requestOptions.headers['Authorization'] != null &&
-              statusCode == 401) {
+          if (error.requestOptions.headers['Authorization'] != null && statusCode == 401) {
             _provider.clear();
           }
           try {
@@ -99,10 +97,8 @@ class ChatDanRepository {
       ),
     );
     // 关闭证书验证
-    (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+    (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
       return client;
     };
   }
@@ -134,8 +130,7 @@ class ChatDanRepository {
         'password': password,
       },
     );
-    final Map<String, dynamic> data =
-        response.data!['data'] as Map<String, dynamic>;
+    final Map<String, dynamic> data = response.data!['data'] as Map<String, dynamic>;
     provider.userInfo = User.fromJson(data);
     provider.accessToken = data['access_token'] as String;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -154,8 +149,7 @@ class ChatDanRepository {
       },
     );
 
-    final Map<String, dynamic> data =
-        response.data!['data'] as Map<String, dynamic>;
+    final Map<String, dynamic> data = response.data!['data'] as Map<String, dynamic>;
     provider.userInfo = User.fromJson(data);
     provider.accessToken = data['access_token'] as String;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -171,7 +165,7 @@ class ChatDanRepository {
     provider.clear();
   }
 
-  Future<User?> loadUserInfo({
+  Future<User> loadUserInfo({
     required int userId,
   }) async {
     final Response<Map<String, dynamic>> response = await _dio.get(
@@ -180,10 +174,29 @@ class ChatDanRepository {
     return User.fromJson(response.data!['data'] as Map<String, dynamic>);
   }
 
-  Future<User?> loadUserMeInfo() async {
+  Future<User> loadUserMeInfo() async {
     final Response<Map<String, dynamic>> response = await _dio.get(
       '$_baseUrl/user/me',
     );
+    return User.fromJson(response.data!['data'] as Map<String, dynamic>);
+  }
+
+  Future<User> modifyUserMe({
+    String? email,
+    String? avatar,
+    String? introduction,
+    String? username,
+  }) async {
+    final Response<Map<String, dynamic>> response = await _dio.put(
+      '$_baseUrl/user/me',
+      data: <String, dynamic>{
+        if (email != null) 'email': email,
+        if (avatar != null) 'avatar': avatar,
+        if (introduction != null) 'introduction': introduction,
+        if (username != null) 'username': username,
+      },
+    );
+
     return User.fromJson(response.data!['data'] as Map<String, dynamic>);
   }
 

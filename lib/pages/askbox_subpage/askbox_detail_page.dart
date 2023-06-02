@@ -1,10 +1,17 @@
-import 'package:chatdan_frontend/model/post.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:chatdan_frontend/model/post.dart';
+import 'package:chatdan_frontend/pages/askbox_subpage/askbox_question_answer_detail_page.dart';
+import 'package:chatdan_frontend/pages/askbox_subpage/askbox_add_question_page.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:go_router/go_router.dart';
 
-import 'askbox_add_question_page.dart';
-import 'askbox_question_answer_detail_page.dart';
+import 'package:chatdan_frontend/utils/errors.dart';
+
+// share
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AskboxDetailPage extends StatefulWidget {
   final String title;
@@ -17,7 +24,7 @@ class AskboxDetailPage extends StatefulWidget {
 }
 
 class _AskboxDetailPageState extends State<AskboxDetailPage> {
-  bool _isPublic = false;
+  bool _isPublic = true;
   List<Post> posts = [];
 
   @override
@@ -32,9 +39,15 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
 
   Future<List<Post>> fetchPosts() async {
     try {
-      return await ChatDanRepository().loadPosts(pageNum: 1, pageSize: 10, messageBoxId: widget.id) ?? [];
+      return await ChatDanRepository()
+              .loadPosts(pageNum: 1, pageSize: 10, messageBoxId: widget.id) ??
+          [];
     } catch (e) {
-      // do nothing
+      if (e is DioError && e.error is NotLoginError && mounted) {
+        context.go('/login');
+      } else {
+        SmartDialog.showToast(e.toString());
+      }
     }
     return [];
   }
@@ -50,11 +63,13 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
     try {
       await ChatDanRepository().deleteAMessageBox(widget.id);
       SmartDialog.showToast('提问箱删除成功');
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      Navigator.popAndPushNamed(context, '/askbox'); // 跳转到 AskBoxPage，并刷新数据
     } catch (e) {
-      SmartDialog.showToast('提问箱删除失败');
+      if (e is DioError && e.error is NotLoginError && mounted) {
+        context.go('/login');
+      } else {
+        SmartDialog.showToast('删除提问箱失败');
+      }
     }
   }
 
@@ -73,6 +88,16 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
     );
   }
 
+  void _shareAskboxLink() {
+    String askboxUrl = 'https://chatdan.top/askbox/${widget.id}';
+
+    Clipboard.setData(ClipboardData(text: askboxUrl)).then((value) {
+      Fluttertoast.showToast(msg: '链接已复制到剪贴板');
+    }).catchError((error) {
+      Fluttertoast.showToast(msg: '复制链接失败');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,16 +110,24 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
           ),
           IconButton(
             onPressed: _deleteAskbox,
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
+          ),
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: _shareAskboxLink,
           ),
         ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ElevatedButton(
-            onPressed: _navigateToQuestionPage,
-            child: Text('向我提问！'),
+          SizedBox(
+            height: 64,
+            child: ElevatedButton(
+              onPressed: _navigateToQuestionPage,
+              style: ButtonStyle(),
+              child: const Text('向我提问！'),
+            ),
           ),
           SizedBox(height: 16),
           if (posts.isEmpty)
@@ -117,7 +150,7 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            post.isAnonymous ? '匿名用户' : post.anonyname ?? '',
+                            post.isAnonymous ? '匿名用户' : post.anonyname ?? 'chatdan',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 8),

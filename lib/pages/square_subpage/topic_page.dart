@@ -2,6 +2,7 @@ import 'package:chatdan_frontend/model/comment.dart';
 import 'package:chatdan_frontend/model/topic.dart';
 import 'package:chatdan_frontend/pages/square_subpage/create_comment_page.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:chatdan_frontend/widgets/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -29,25 +30,6 @@ class _TopicPageState extends State<TopicPage>
   @override
   bool get wantKeepAlive => true;
 
-  // TODO: use load a division
-  // final Map<String, dynamic> testCommentJson = {
-  //   'id': 0,
-  //   'created_at': 'user name',
-  //   'updated_at': 'u',
-  //   'content':
-  //       '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111',
-  //   'poster_id': 0,
-  //   'topic_id': 0,
-  //   'is_anonymous': true,
-  //   'anonyname': 'anonyed user',
-  //   'ranking': 1,
-  //   'is_owner': false,
-  //   // "like_count": 0,
-  //   // "dislike_count": 0,
-  //   'liked': false,
-  //   'disliked': false,
-  // };
-
   void _fetchComment() async {
     // List Json = [];
     // // Json.add(testTopicJson);
@@ -62,7 +44,9 @@ class _TopicPageState extends State<TopicPage>
       newComments = await ChatDanRepository().loadComments(
           pageNum: _pageNum, pageSize: _pageSize, topicId: _topic!.id);
       newComments ??= [];
-      commentList = newComments;
+      setState(() {
+        commentList = newComments!;
+      });
 
       // final isLastPage = newComments.length < _pageSize;
       // if (isLastPage) {
@@ -93,7 +77,9 @@ class _TopicPageState extends State<TopicPage>
         newComments = await ChatDanRepository().loadComments(
             pageNum: _pageNum, pageSize: _pageSize, topicId: _topic!.id);
         newComments ??= [];
-        commentList..addAll(newComments);
+        setState(() {
+          commentList..addAll(newComments!);
+        });
         isLoading = false;
       });
     }
@@ -107,6 +93,7 @@ class _TopicPageState extends State<TopicPage>
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
+        // print("get more");
         _getMorecommentList();
       }
     });
@@ -129,7 +116,10 @@ class _TopicPageState extends State<TopicPage>
     // _getTopic(widget.topicId);
     return Scaffold(
         appBar: buildAppBar(context),
-        body: buildBodyWidget(context),
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: buildBodyWidget(context),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             _onCreateCommentButtonTapped();
@@ -151,9 +141,9 @@ class _TopicPageState extends State<TopicPage>
       backgroundColor: Colors.white,
       elevation: 0,
       // centerTitle: true,
-      toolbarHeight: 35,
+      // toolbarHeight: 35,
       title: Text(
-        '',
+        '#' + _topic!.id.toString(),
         style: TextStyle(height: 8),
       ),
       leading: IconButton(
@@ -161,27 +151,6 @@ class _TopicPageState extends State<TopicPage>
             GoRouter.of(context).pop();
           },
           icon: Icon(Icons.arrow_back_ios_new)),
-      // actions: <Widget>[
-      //   //导航条右方 类似rightBarItem
-      //   IconButton(
-      //     icon: Icon(Icons.search),
-      //     onPressed: () {},
-      //   )
-      // ],
-      // bottom: const TabBar(
-      //   isScrollable: true, //可滚动
-      //   indicatorColor: Color.fromARGB(0, 0, 0, 0), //指示器的颜色
-      //   labelColor: Colors.black, //选中文字颜色
-      //   unselectedLabelColor: Colors.grey, //未选中文字颜色
-      //   // indicatorSize: TabBarIndicatorSize.label, //指示器与文字等宽
-      //   labelStyle: TextStyle(fontSize: 15.0),
-      //   unselectedLabelStyle: TextStyle(fontSize: 12.0),
-      //   tabs: <Widget>[
-      //     Tab(text: "综合"),
-      //     Tab(text: "课程"),
-      //     Tab(text: "热点"),
-      //   ],
-      // ),
     );
   }
 
@@ -208,8 +177,7 @@ class _TopicPageState extends State<TopicPage>
         delegate: SliverChildBuilderDelegate(
       (context, index) {
         Comment comment = commentList[index];
-        print(comment.content);
-        return buildCommentWidget(context, comment);
+        return CommentWidget(comment);
       },
       childCount: commentList.length,
     ));
@@ -369,118 +337,6 @@ class _TopicPageState extends State<TopicPage>
                           _topic!.favoriteCount.toString()),
                     ],
                   )),
-            ],
-          )),
-    );
-  }
-
-  // 回复元素
-  Widget buildCommentWidget(BuildContext context, Comment comment) {
-    // get user name
-    String commentOwner;
-    bool is_anonymous = comment.isAnonymous;
-    if (is_anonymous) {
-      commentOwner = comment.anonyname!;
-    } else {
-      // FIXME: get user name
-      commentOwner = "用户";
-    }
-    // // show anony info
-    String anonyInfo = '';
-    if (comment.isAnonymous) {
-      anonyInfo = '匿名用户';
-    }
-    return GestureDetector(
-      child: Container(
-          margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.35,
-          decoration: BoxDecoration(boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 3,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ], color: Colors.white, borderRadius: BorderRadius.circular((20))),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // 用户ID展示（用户名称，是否匿名）
-              Container(
-                child: ListTile(
-                  // title: Text(
-                  //   "${comment["title"]}",
-                  //   textAlign: TextAlign.left,
-                  //   style: TextStyle(fontWeight: FontWeight.bold),
-                  // ),
-                  // // FIXME: use a widget(icon + text) instead of simple text to show anony
-                  // // subtitle: Text(topicOwner),
-                  // subtitle: buildAnonyButton(commentOwner, is_anonymous),
-                  title: Text(
-                    commentOwner,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(anonyInfo),
-                ),
-              ),
-
-              // 帖子内容展示
-              Container(
-                padding: EdgeInsets.only(left: 10),
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // Text(
-                    //   "${comment["title"]}",
-                    //   textAlign: TextAlign.left,
-                    //   style: TextStyle(fontWeight: FontWeight.bold),
-                    // ),
-                    Text(
-                      comment.content,
-                      textAlign: TextAlign.left,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  ],
-                ),
-              ),
-
-              // 图片
-              // Container(
-              //     padding: EdgeInsets.only(left: 10),
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Wrap(
-              //       // mainAxisAlignment: MainAxisAlignment.start,
-              //       children: [
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //       ],
-              //     )),
-
-              // 元信息（点赞数）
-              // TODO: 目前还没有回复的点赞数
-              // Container(
-              //     padding: EdgeInsets.all(3),
-              //     // height: MediaQuery.of(context).size.height * 0.05,
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         buildRowIconButton(
-              //             // FIXME: change the func into add like num
-              //             refreshcommentList,
-              //             Icon(
-              //               Icons.thumb_up,
-              //               color: Colors.grey,
-              //               size: MediaQuery.of(context).size.height * 0.02,
-              //             ),
-              //             comment['like_count'].toString()),
-              //       ],
-              //     )),
             ],
           )),
     );

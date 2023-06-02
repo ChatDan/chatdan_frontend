@@ -1,9 +1,13 @@
-import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:chatdan_frontend/utils/errors.dart';
 
 class AddQuestionPage extends StatefulWidget {
   final int messageBoxId;
-
   const AddQuestionPage(this.messageBoxId, {super.key});
 
   @override
@@ -31,7 +35,11 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         isPublic: _isPublic,
       );
     } catch (e) {
-      // do nothing
+      if (e is DioError && e.error is NotLoginError && mounted) {
+        context.go('/login');
+      } else {
+        SmartDialog.showToast(e.toString());
+      }
     }
 
     // 返回到上一个页面
@@ -57,13 +65,14 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         child: Column(
           children: [
             SwitchListTile(
-                title: const Text('匿名'),
-                value: _isAnonymous,
-                onChanged: (value) {
-                  setState(() {
-                    _isAnonymous = value;
-                  });
-                }),
+                  title: const Text('匿名'),
+                  value: _isAnonymous,
+                  onChanged: (value) {
+                    setState(() {
+                      _isAnonymous = value;
+                    });
+                  }
+            ),
             TextFormField(
               controller: _inputController,
               maxLines: 10,

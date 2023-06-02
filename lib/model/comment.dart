@@ -1,3 +1,4 @@
+import 'package:chatdan_frontend/model/user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'comment.g.dart';
@@ -9,6 +10,7 @@ class Comment {
   DateTime updatedAt;
   final int topicId;
   final int? posterId;
+  final User? poster;
   String content;
   final bool isAnonymous;
   final String? anonyname;
@@ -26,6 +28,7 @@ class Comment {
     required this.updatedAt,
     required this.topicId,
     this.posterId,
+    this.poster,
     this.content = '',
     required this.isAnonymous,
     this.anonyname,
@@ -37,7 +40,8 @@ class Comment {
     required this.dislikeCount,
   });
 
-  factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
+  factory Comment.fromJson(Map<String, dynamic> json) =>
+      _$CommentFromJson(json);
 
   Map<String, dynamic> toJson() => _$CommentToJson(this);
 

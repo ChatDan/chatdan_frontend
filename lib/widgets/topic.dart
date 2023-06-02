@@ -21,7 +21,7 @@ class TopicWidget extends StatefulWidget {
 class _TopicWidgetState extends State<TopicWidget> {
   // final article = widget.topic;
   // String topicOwner;
-  late final article;
+  late final Topic article;
   late int topicId;
   late int _likeCount;
   late bool _isLiked;
@@ -136,7 +136,7 @@ class _TopicWidgetState extends State<TopicWidget> {
       child: Container(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.35,
+          // height: MediaQuery.of(context).size.height * 0.3,
           decoration: BoxDecoration(boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -146,7 +146,6 @@ class _TopicWidgetState extends State<TopicWidget> {
             ),
           ], color: Colors.white, borderRadius: BorderRadius.circular((20))),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // 用户ID展示（用户名称，是否匿名）
               Container(
@@ -178,44 +177,33 @@ class _TopicWidgetState extends State<TopicWidget> {
                     Text(
                       article.content,
                       textAlign: TextAlign.left,
-                      maxLines: 3,
+                      maxLines: 4,
                       overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),
               ),
 
-              // 图片
-              // Container(
-              //     padding: EdgeInsets.only(left: 10),
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Wrap(
-              //       // mainAxisAlignment: MainAxisAlignment.start,
-              //       children: [
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //       ],
-              //     )),
-
               // tags
-              // Container(
-              //   alignment: Alignment(-1, 0),
-              //   padding: EdgeInsets.all(5),
-              //   child: Wrap(
-              //     spacing: 7,
-              //     children: article.tags
-              //             ?.map((e) => Chip(
-              //                   label: Text(e.name),
-              //                   // labelPadding: EdgeInsets.only(
-              //                   //     left: 2, right: 2, top: -5, bottom: -5),
-              //                 ))
-              //             .toList() ??
-              //         [],
-              //   ),
-              // ),
+              Container(
+                alignment: Alignment(-1, 0),
+                padding: EdgeInsets.all(5),
+                child: Wrap(
+                  spacing: 7,
+                  children: article.tags
+                          ?.map((e) => Chip(
+                                label: Text(e.name),
+                                // labelPadding: EdgeInsets.only(
+                                //     left: 2, right: 2, top: -5, bottom: -5),
+                              ))
+                          .toList() ??
+                      [],
+                ),
+              ),
 
               // 元信息（点赞数，收藏数，评论数）
               Container(
+                  alignment: Alignment.bottomCenter,
                   padding: EdgeInsets.all(3),
                   // height: MediaQuery.of(context).size.height * 0.05,
                   width: MediaQuery.of(context).size.width,

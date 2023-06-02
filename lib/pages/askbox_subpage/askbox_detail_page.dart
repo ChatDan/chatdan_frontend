@@ -102,9 +102,9 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
           else
             Expanded(
               child: ListView.builder(
-                itemCount: posts?.length ?? 0,
+                itemCount: posts.length ?? 0,
                 itemBuilder: (context, index) {
-                  final post = posts![index];
+                  final post = posts[index];
                   return GestureDetector(
                     onTap: () {
                       _navigateToQuestionAnswerDetail(post);

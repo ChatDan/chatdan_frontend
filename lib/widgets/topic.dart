@@ -1,7 +1,10 @@
 import 'package:chatdan_frontend/model/topic.dart';
 import 'package:chatdan_frontend/pages/account_subpage/profile.dart';
+import 'package:chatdan_frontend/pages/square_subpage/create_comment_page.dart';
 import 'package:chatdan_frontend/pages/square_subpage/topic_page.dart';
 import 'package:flutter/material.dart';
+
+import '../repository/chatdan_repository.dart';
 
 class TopicWidget extends StatefulWidget {
   final Topic topic;
@@ -20,6 +23,82 @@ class _TopicWidgetState extends State<TopicWidget> {
   Widget build(BuildContext context) {
     final article = widget.topic;
     String topicOwner;
+    int _likeCount = article.likeCount;
+    bool _isLiked = article.liked;
+    int _commentCount = article.commentCount;
+    int _favorCount = article.favoriteCount;
+    bool _isfavored = article.favored;
+
+    _createCommentInSquare() {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CreateCommentPage(
+                    topicId: article.id,
+                  ))).then((value) {
+        setState(() {});
+      });
+    }
+
+    _likeTopicInSquare() {
+      try {
+        if (_isLiked == false) {
+          // like a topic
+          // ChatDanRepository().likeATopic(article.id).then((value) {
+          //   setState(() {
+          //     _likeCount += 1;
+          //   });
+          // });
+          ChatDanRepository().likeATopic(article.id);
+          setState(() {
+            _likeCount = _likeCount + 1;
+          });
+        } else {
+          // dislike a topic
+          // ChatDanRepository().dislikeATopic(article.id).then((value) {
+          //   setState(() {
+          //     _likeCount -= 1;
+          //   });
+          // });
+          ChatDanRepository().unlikeATopic(article.id);
+          setState(() {
+            _likeCount = _likeCount - 1;
+          });
+        }
+      } catch (e) {
+        // do nothing
+      }
+    }
+
+    _favorTopicInSquare() {
+      try {
+        if (_isfavored == false) {
+          // like a topic
+          // ChatDanRepository().likeATopic(article.id).then((value) {
+          //   setState(() {
+          //     _likeCount += 1;
+          //   });
+          // });
+          ChatDanRepository().favorATopic(article.id);
+          setState(() {
+            _favorCount = _favorCount + 1;
+          });
+        } else {
+          // dislike a topic
+          // ChatDanRepository().dislikeATopic(article.id).then((value) {
+          //   setState(() {
+          //     _likeCount -= 1;
+          //   });
+          // });
+          ChatDanRepository().unfavorATopic(article.id);
+          setState(() {
+            _favorCount = _favorCount - 1;
+          });
+        }
+      } catch (e) {
+        // do nothing
+      }
+    }
 
     // get user name
     if (article.isAnonymous) {
@@ -35,7 +114,8 @@ class _TopicWidgetState extends State<TopicWidget> {
     int topicId = article.id;
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => TopicPage(topic: article)));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => TopicPage(topic: article)));
       },
       child: Container(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
@@ -139,31 +219,31 @@ class _TopicWidgetState extends State<TopicWidget> {
                     children: [
                       buildRowIconButton(
                           // FIXME: change the func into add like num
-                          () {},
+                          _likeTopicInSquare,
                           Icon(
-                            Icons.thumb_up,
+                            _isLiked ? Icons.favorite : Icons.favorite_border,
                             color: Colors.grey,
                             size: MediaQuery.of(context).size.height * 0.02,
                           ),
-                          article.likeCount.toString()),
+                          _likeCount.toString()),
                       buildRowIconButton(
                           // FIXME: direct comment
-                          () {},
+                          _createCommentInSquare,
                           Icon(
                             Icons.message,
                             color: Colors.grey,
                             size: MediaQuery.of(context).size.height * 0.02,
                           ),
-                          article.commentCount.toString()),
+                          _commentCount.toString()),
                       buildRowIconButton(
                           // FIXME: add favor num
-                          () {},
+                          _favorTopicInSquare,
                           Icon(
-                            Icons.star_purple500_outlined,
+                            _isfavored ? Icons.star : Icons.star_border,
                             color: Colors.grey,
                             size: MediaQuery.of(context).size.height * 0.02,
                           ),
-                          article.favoriteCount.toString()),
+                          _favorCount.toString()),
                     ],
                   )),
             ],
@@ -192,7 +272,8 @@ class _TopicWidgetState extends State<TopicWidget> {
           size: 15,
         ),
         Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 22),
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 22),
             padding: EdgeInsets.only(left: 5),
             child: Text(
               text,
@@ -204,15 +285,20 @@ class _TopicWidgetState extends State<TopicWidget> {
       final poster = article.poster!;
       return GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage(user: poster)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserProfilePage(user: poster)));
         },
         child: Row(children: <Widget>[
           CircleAvatar(
-            backgroundImage: poster.avatar == null ? null : NetworkImage(poster.avatar!),
+            backgroundImage:
+                poster.avatar == null ? null : NetworkImage(poster.avatar!),
             radius: 10,
           ),
           Container(
-              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width - 22),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 22),
               padding: EdgeInsets.only(left: 5),
               child: Text(
                 poster.username,

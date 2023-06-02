@@ -12,6 +12,8 @@ class ListTopicsWidget extends StatefulWidget {
   final int? divisionId;
   final Tag? tag;
   final bool isPage;
+  final bool isSearch;
+  final String search;
 
   const ListTopicsWidget({
     super.key,
@@ -20,6 +22,8 @@ class ListTopicsWidget extends StatefulWidget {
     this.divisionId,
     this.tag,
     this.isPage = false,
+    this.isSearch = false,
+    this.search = '',
   });
 
   @override
@@ -28,8 +32,10 @@ class ListTopicsWidget extends StatefulWidget {
 
 class _ListTopicsWidgetState extends State<ListTopicsWidget> {
   static const _pageSize = 10;
+  static const _pageNum = 1;
 
-  final PagingController<DateTime?, Topic> _pagingController = PagingController(firstPageKey: null);
+  final PagingController<DateTime?, Topic> _pagingController =
+      PagingController(firstPageKey: null);
 
   @override
   void initState() {
@@ -59,6 +65,12 @@ class _ListTopicsWidgetState extends State<ListTopicsWidget> {
           startTime: pageKey,
           divisionId: widget.divisionId,
         );
+      } else if (widget.isSearch) {
+        newTopics = await ChatDanRepository().searchTopics(
+          pageSize: _pageSize,
+          pageNum: _pageNum,
+          search: widget.search,
+        );
       } else {
         newTopics = await ChatDanRepository().loadTopics(
           pageSize: _pageSize,
@@ -85,8 +97,10 @@ class _ListTopicsWidgetState extends State<ListTopicsWidget> {
             pagingController: _pagingController,
             builderDelegate: PagedChildBuilderDelegate<Topic>(
               itemBuilder: (context, item, index) => TopicWidget(topic: item),
-              noItemsFoundIndicatorBuilder: (context) => const Center(child: Text('暂无数据')),
-              noMoreItemsIndicatorBuilder: (context) => const Center(child: Text('没有更多了')),
+              noItemsFoundIndicatorBuilder: (context) =>
+                  const Center(child: Text('暂无数据')),
+              noMoreItemsIndicatorBuilder: (context) =>
+                  const Center(child: Text('没有更多了')),
             )),
       );
 

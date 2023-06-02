@@ -9,7 +9,7 @@ class SearchPage extends SearchDelegate<String> {
     Widget RIButton = IconButton(
       icon: Icon(Icons.clear),
       onPressed: () {
-        query = "";
+        query = '';
         showSuggestions(context);
       },
     );
@@ -22,7 +22,7 @@ class SearchPage extends SearchDelegate<String> {
   Widget buildLeading(BuildContext context) {
     return IconButton(
         icon: AnimatedIcon(icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
-        onPressed: () => close(context, "error"));
+        onPressed: () => close(context, 'error'));
   }
 
   @override
@@ -55,7 +55,7 @@ class SearchPage extends SearchDelegate<String> {
             ))
         : Center(
             child: Text(
-              "没有此选项！",
+              '没有此选项！',
               style: TextStyle(
                 color: Colors.blue,
                 fontSize: 18,
@@ -67,7 +67,7 @@ class SearchPage extends SearchDelegate<String> {
   //设置推荐
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Text("历史搜索记录");
+    return Text('历史搜索记录');
   }
 
   @override

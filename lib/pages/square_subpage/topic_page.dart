@@ -76,7 +76,9 @@ class _TopicPageState extends State<TopicPage>
         newComments = await ChatDanRepository().loadComments(
             pageNum: _pageNum, pageSize: _pageSize, topicId: _topic!.id);
         newComments ??= [];
-        commentList..addAll(newComments);
+        setState(() {
+          commentList..addAll(newComments!);
+        });
         isLoading = false;
       });
     }
@@ -90,6 +92,7 @@ class _TopicPageState extends State<TopicPage>
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
+        // print("get more");
         _getMorecommentList();
       }
     });
@@ -112,7 +115,10 @@ class _TopicPageState extends State<TopicPage>
     // _getTopic(widget.topicId);
     return Scaffold(
         appBar: buildAppBar(context),
-        body: buildBodyWidget(context),
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: buildBodyWidget(context),
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             _onCreateCommentButtonTapped();
@@ -136,7 +142,7 @@ class _TopicPageState extends State<TopicPage>
       // centerTitle: true,
       // toolbarHeight: 35,
       title: Text(
-        '',
+        '#' + _topic!.id.toString(),
         style: TextStyle(height: 8),
       ),
       leading: IconButton(
@@ -424,24 +430,24 @@ class _TopicPageState extends State<TopicPage>
 
               // 元信息（点赞数）
               // TODO: 目前还没有回复的点赞数
-              // Container(
-              //     padding: EdgeInsets.all(3),
-              //     // height: MediaQuery.of(context).size.height * 0.05,
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         buildRowIconButton(
-              //             // FIXME: change the func into add like num
-              //             () {},
-              //             Icon(
-              //               Icons.thumb_up,
-              //               color: Colors.grey,
-              //               size: MediaQuery.of(context).size.height * 0.02,
-              //             ),
-              //             comment['like_count'].toString()),
-              //       ],
-              //     )),
+              Container(
+                  padding: EdgeInsets.all(3),
+                  // height: MediaQuery.of(context).size.height * 0.05,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      buildRowIconButton(
+                          // FIXME: change the func into add like num
+                          () {},
+                          Icon(
+                            Icons.thumb_up,
+                            color: Colors.grey,
+                            size: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          comment.likeCount.toString()),
+                    ],
+                  )),
             ],
           )),
     );

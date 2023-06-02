@@ -1,6 +1,7 @@
 import 'package:chatdan_frontend/model/division.dart';
 import 'package:chatdan_frontend/pages/square_subpage/create_topic_page.dart';
 import 'package:chatdan_frontend/pages/square_subpage/list_topics_page.dart';
+import 'package:chatdan_frontend/pages/square_subpage/search_square_page.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 
@@ -43,6 +44,14 @@ class _SquarePageState extends State<SquarePage> {
     });
   }
 
+  // void _onSearchTopicButtonTapped() {
+  //   Navigator.push(context,
+  //           MaterialPageRoute(builder: (context) => SearchSquarePage()))
+  //       .then((value) {
+  //     setState(() {});
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -72,9 +81,10 @@ class _SquarePageState extends State<SquarePage> {
       backgroundColor: Colors.white,
       actions: <Widget>[
         IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {},
-        )
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: SearchSquareDelegate());
+            })
       ],
       bottom: divisionList.isEmpty
           ? const PreferredSize(

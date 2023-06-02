@@ -234,7 +234,7 @@ class _TopicWidgetState extends State<TopicWidget> {
                             color: Colors.grey,
                             size: MediaQuery.of(context).size.height * 0.02,
                           ),
-                          article.commentCount.toString()),
+                          _commentCount.toString()),
                       buildRowIconButton(
                           // FIXME: add favor num
                           _favorTopicInSquare,

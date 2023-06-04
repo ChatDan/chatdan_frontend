@@ -48,6 +48,28 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
     });
   }
 
+  void _deleteChannel(int channelId) {
+    ChatDanRepository().deleteAChannel(channelId).then((_) {
+      setState(() {
+        channels.removeWhere((channel) => channel.id == channelId);
+      });
+    }).catchError((error) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('删除失败'),
+          content: const Text('无法删除追问追答，请重试'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('确定'),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     bool hasAnswer = widget.post.channels?.isNotEmpty ?? false;
@@ -74,7 +96,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
             ),
           ),
           if (hasAnswer && answerContent.isNotEmpty) ...[
-            Divider(),
+            const Divider(),
             // 回答块
             Card(
               child: ListTile(
@@ -92,6 +114,12 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
                 return ListTile(
                   title: const Text('追问'),
                   subtitle: Text(channel.content),
+                  trailing: widget.post.isOwner
+                      ? IconButton(
+                    onPressed: () => _deleteChannel(channel.id),
+                    icon: const Icon(Icons.delete),
+                  )
+                      : null,
                 );
               },
             ),
@@ -122,14 +150,25 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       MaterialPageRoute(builder: (context) => QuestionPage()),
     ).then((newChannelContent) {
       if (newChannelContent != null) {
-        final newChannel = Channel(
-          id: channels.length + 1, // 替换为实际的生成新 channel id 的逻辑
-          postId: widget.post.id,
-          content: newChannelContent,
-          isOwner:
-          widget.post.posterId == ChatDanRepository().provider.userInfo!.id,
-        );
-        _addChannel(newChannel);
+        ChatDanRepository()
+            .createAChannel(widget.post.id, newChannelContent)
+            .then((newChannel) {
+          _addChannel(newChannel);
+        }).catchError((error) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('操作失败'),
+              content: const Text('无法追加提问，请重试'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('确定'),
+                ),
+              ],
+            ),
+          );
+        });
       }
     });
   }
@@ -140,14 +179,25 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       MaterialPageRoute(builder: (context) => AnswerPage()),
     ).then((newChannelContent) {
       if (newChannelContent != null) {
-        final newChannel = Channel(
-          id: channels.length + 1, // 替换为实际的生成新 channel id 的逻辑
-          postId: widget.post.id,
-          content: newChannelContent,
-          isOwner:
-          widget.post.posterId == ChatDanRepository().provider.userInfo!.id,
-        );
-        _addChannel(newChannel);
+        ChatDanRepository()
+            .createAChannel(widget.post.id, newChannelContent)
+            .then((newChannel) {
+          _addChannel(newChannel);
+        }).catchError((error) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('操作失败'),
+              content: const Text('无法追加回答，请重试'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('确定'),
+                ),
+              ],
+            ),
+          );
+        });
       }
     });
   }
@@ -228,7 +278,7 @@ class _AnswerPageState extends State<AnswerPage> {
                 String newChannelContent = _textEditingController.text;
                 Navigator.pop(context, newChannelContent);
               },
-              child: Text('发送'),
+              child: const Text('发送'),
             ),
           ],
         ),

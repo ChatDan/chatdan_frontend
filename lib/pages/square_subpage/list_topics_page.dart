@@ -108,11 +108,11 @@ class _ListTopicsWidgetState extends State<ListTopicsWidget> {
   Widget build(BuildContext context) {
     String title;
     if (widget.isFavorite) {
-      title = '我的发帖';
+      title = '我的收藏';
     } else if (widget.isMe) {
-      title = '我的话题';
+      title = '我的发帖';
     } else {
-      title = '话题列表';
+      title = '帖子列表';
     }
     if (widget.isPage) {
       return Scaffold(

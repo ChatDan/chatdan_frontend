@@ -31,14 +31,14 @@ class _AskboxPageState extends State<AskboxPage> {
         isLoading = true;
       });
 
-      final userId = widget.ownerId;
-
-      final fetchedBoxes = await ChatDanRepository()
-          .loadMessageBoxes(pageNum: 1, pageSize: 10, owner: userId) ??
-          [];
+      final fetchedBoxes = await ChatDanRepository().loadMessageBoxes(
+        pageNum: 1,
+        pageSize: 10,
+        owner: widget.ownerId,
+      );
 
       setState(() {
-        boxes = fetchedBoxes;
+        boxes = fetchedBoxes ?? [];
       });
     } catch (e) {
       if (e is DioError && e.error is NotLoginError && mounted) {
@@ -74,7 +74,7 @@ class _AskboxPageState extends State<AskboxPage> {
       body: RefreshIndicator(
         onRefresh: _refreshMessageBoxes,
         child: isLoading
-            ? Center(
+            ? const Center(
           child: CircularProgressIndicator(),
         )
             : boxes.isEmpty
@@ -132,11 +132,7 @@ class _AskboxPageState extends State<AskboxPage> {
             MaterialPageRoute(
               builder: (context) => CreateAskboxPage(),
             ),
-          ).then((value) {
-            setState(() {
-              _fetchMessageBoxes();
-            });
-          });
+          );
         },
         child: const Icon(Icons.add),
       )

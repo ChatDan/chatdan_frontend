@@ -9,6 +9,9 @@ part of 'post.dart';
 Post _$PostFromJson(Map<String, dynamic> json) => Post(
       id: json['id'] as int,
       posterId: json['poster_id'] as int,
+      poster: json['poster'] == null
+          ? null
+          : User.fromJson(json['poster'] as Map<String, dynamic>),
       content: json['content'] as String? ?? '',
       visibility: json['visibility'] as String,
       isOwner: json['is_owner'] as bool,
@@ -24,6 +27,7 @@ Post _$PostFromJson(Map<String, dynamic> json) => Post(
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'id': instance.id,
       'poster_id': instance.posterId,
+      'poster': instance.poster,
       'content': instance.content,
       'visibility': instance.visibility,
       'is_owner': instance.isOwner,

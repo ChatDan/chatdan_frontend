@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       GoRoute(path: '/register', builder: (context, state) => const RegistrationPage()),
       GoRoute(path: '/home', builder: (context, state) => const SquarePage()),
       GoRoute(path: '/wall', builder: (context, state) => const WallPage()),
-      GoRoute(path: '/askBox', builder: (context, state) => const AskboxPage()),
+      GoRoute(path: '/askBox', builder: (context, state) =>  AskboxPage(provider.userInfo!.id)),
       GoRoute(path: '/contact', builder: (context, state) => const ContactsPage()),
       GoRoute(path: '/mine', builder: (context, state) => const MinePage())
     ],

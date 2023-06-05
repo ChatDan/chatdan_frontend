@@ -29,7 +29,7 @@ class SearchSquareDelegate extends SearchDelegate<String> {
     Widget RIButton = IconButton(
       icon: Icon(Icons.clear),
       onPressed: () {
-        String query = '';
+        query = '';
         showSuggestions(context);
       },
     );

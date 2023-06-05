@@ -158,7 +158,8 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
       controller: _topicContextController,
       maxLines: 10,
       // decoration: const InputDecoration(labelText: '内容'),
-      decoration: const InputDecoration.collapsed(hintText: '', border: OutlineInputBorder()),
+      decoration: const InputDecoration.collapsed(
+          hintText: '', border: OutlineInputBorder()),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return '内容不能为空';
@@ -173,7 +174,8 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
   Widget buildTags() {
     return TextFormField(
       controller: _tagController,
-      decoration: const InputDecoration(labelText: '输入tag(不超过五个)，不同tag用英文分号\';\'隔开'),
+      decoration:
+          const InputDecoration(labelText: '输入tag(不超过五个)，不同tag用英文分号\';\'隔开'),
       // validator: (value) {
       //   if (value == null || value.isEmpty) {
       //     return '标题不能为空';
@@ -190,39 +192,43 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
       items: <DropdownMenuItem<String>>[
         DropdownMenuItem(
           child: Text(
-            '分区1',
-            style: TextStyle(color: _divisionId == '1' ? Colors.blue : Colors.grey),
+            '综合',
+            style: TextStyle(
+                color: _divisionId == '1' ? Colors.blue : Colors.grey),
           ),
           value: '1',
         ),
         DropdownMenuItem(
           child: Text(
-            '分区2',
-            style: TextStyle(color: _divisionId == '2' ? Colors.blue : Colors.grey),
+            '校园',
+            style: TextStyle(
+                color: _divisionId == '2' ? Colors.blue : Colors.grey),
           ),
           value: '2',
         ),
         DropdownMenuItem(
           child: Text(
-            '分区3',
-            style: TextStyle(color: _divisionId == '3' ? Colors.blue : Colors.grey),
+            '情感',
+            style: TextStyle(
+                color: _divisionId == '3' ? Colors.blue : Colors.grey),
           ),
           value: '3',
         ),
-        DropdownMenuItem(
-          child: Text(
-            '分区4',
-            style: TextStyle(color: _divisionId == '4' ? Colors.blue : Colors.grey),
-          ),
-          value: '4',
-        ),
+        // DropdownMenuItem(
+        //   child: Text(
+        //     '分区4',
+        //     style: TextStyle(
+        //         color: _divisionId == '4' ? Colors.blue : Colors.grey),
+        //   ),
+        //   value: '4',
+        // ),
       ],
       onChanged: (selectValue) {
         setState(() {
           _divisionId = (selectValue) as String;
         });
       },
-      value: '1',
+      value: _divisionId,
       style: new TextStyle(
           //设置文本框里面文字的样式
           color: Colors.blue,

@@ -2,6 +2,8 @@ import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
+import '../../model/comment.dart';
+
 class CreateCommentPage extends StatefulWidget {
   final int topicId;
   const CreateCommentPage({required this.topicId, super.key});
@@ -22,11 +24,11 @@ class _CreateCommentPageState extends State<CreateCommentPage> {
     final content = _contentController.text;
     try {
       SmartDialog.showLoading(msg: '发送中...');
-      await ChatDanRepository().createAComment(
+      Comment? new_comment = await ChatDanRepository().createAComment(
           content: content, topicId: widget.topicId, isAnonymous: _isAnonymous);
       if (mounted) {
         SmartDialog.showToast('发送成功', displayTime: const Duration(seconds: 1));
-        Navigator.pop(context, true);
+        Navigator.pop(context, new_comment);
       }
     } catch (e) {
       // do nothing, toast in dio interceptor

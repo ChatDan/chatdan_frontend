@@ -40,7 +40,12 @@ class _SquarePageState extends State<SquarePage> {
     Navigator.push(context,
             MaterialPageRoute(builder: (context) => const CreateTopicPage()))
         .then((value) {
-      setState(() {});
+      setState(() {
+        // FIXME: new topic should be added to the list
+        // if (value != null) {
+        //   topicList..add(value!);
+        // }
+      });
     });
   }
 

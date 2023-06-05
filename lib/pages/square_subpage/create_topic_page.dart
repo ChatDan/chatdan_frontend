@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../model/topic.dart';
+
 class CreateTopicPage extends StatefulWidget {
   const CreateTopicPage({super.key});
 
@@ -64,7 +66,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
       _getTags();
       final title = _titleController.text;
       final content = _topicContextController.text;
-      await ChatDanRepository().createATopic(
+      Topic new_topic = await ChatDanRepository().createATopic(
         title: title,
         content: content,
         divisionId: int.parse(_divisionId),
@@ -73,7 +75,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
       );
       if (mounted) {
         SmartDialog.showToast('发送成功', displayTime: const Duration(seconds: 3));
-        Navigator.pop(context, true);
+        Navigator.pop(context, new_topic);
       }
     } catch (e) {
       // do nothing, toast in dio interceptor

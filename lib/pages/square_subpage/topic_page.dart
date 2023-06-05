@@ -110,7 +110,11 @@ class _TopicPageState extends State<TopicPage>
                 topicId: _topic!.id,
               )),
     ).then((value) {
-      setState(() {});
+      setState(() {
+        if (value != null) {
+          commentList..add(value!);
+        }
+      });
     });
   }
 

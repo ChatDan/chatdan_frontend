@@ -73,7 +73,7 @@ class _CreateTopicPageState extends State<CreateTopicPage> {
       );
       if (mounted) {
         SmartDialog.showToast('发送成功', displayTime: const Duration(seconds: 3));
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       // do nothing, toast in dio interceptor

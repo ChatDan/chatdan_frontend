@@ -22,11 +22,11 @@ class _CreateCommentPageState extends State<CreateCommentPage> {
     final content = _contentController.text;
     try {
       SmartDialog.showLoading(msg: '发送中...');
-      await ChatDanRepository()
-          .createAComment(content: content, topicId: widget.topicId);
+      await ChatDanRepository().createAComment(
+          content: content, topicId: widget.topicId, isAnonymous: _isAnonymous);
       if (mounted) {
         SmartDialog.showToast('发送成功', displayTime: const Duration(seconds: 1));
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (e) {
       // do nothing, toast in dio interceptor

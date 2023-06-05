@@ -27,6 +27,7 @@ class _TopicPageState extends State<TopicPage>
       PagingController(firstPageKey: null);
   final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
+  static final provider = ChatDanRepository().provider;
 
   @override
   bool get wantKeepAlive => true;
@@ -186,7 +187,6 @@ class _TopicPageState extends State<TopicPage>
   }
 
   Widget buildTopic(BuildContext context) {
-    // FIXME: use Sliverlist
     // return buildTopicWidget(context);
     // return ListView.builder(
     //   itemCount: 1,
@@ -210,7 +210,6 @@ class _TopicPageState extends State<TopicPage>
     if (is_anonymous) {
       topicOwner = _topic!.anonyname;
     } else {
-      // FIXME: get user name
       topicOwner = _topic!.poster!.username;
     }
     // // show anony info
@@ -261,7 +260,6 @@ class _TopicPageState extends State<TopicPage>
                     textAlign: TextAlign.left,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  // FIXME: use a widget(icon + text) instead of simple text to show anony
                   // subtitle: Text(topicOwner),
                   subtitle: buildTopicOwnerButton(_topic!),
                 ),
@@ -340,7 +338,6 @@ class _TopicPageState extends State<TopicPage>
     if (is_anonymous) {
       commentOwner = comment.anonyname!;
     } else {
-      // FIXME: get user name
       commentOwner = comment.poster!.username;
     }
     // // show anony info
@@ -368,37 +365,9 @@ class _TopicPageState extends State<TopicPage>
               Container(
                 child: ListTile(
                   title: buildCommentOwnerButton(comment),
-                  trailing: buildRowIconButton(
-                      // FIXME: change the func into add like num
-                      () {},
-                      Icon(
-                        Icons.favorite_border,
-                        color: Colors.grey,
-                        size: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      comment.likeCount.toString()),
-                  // subtitle: Text(comment.poster ? '楼主' : ''),
+                  trailing: buildCommentMetaButton(comment, _topic!),
                 ),
               ), // 元信息（点赞数）
-              // TODO: 目前还没有回复的点赞数
-              // Container(
-              //     padding: EdgeInsets.all(3),
-              //     // height: MediaQuery.of(context).size.height * 0.05,
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //       children: [
-              //         buildRowIconButton(
-              //             // FIXME: change the func into add like num
-              //             () {},
-              //             Icon(
-              //               Icons.thumb_up,
-              //               color: Colors.grey,
-              //               size: MediaQuery.of(context).size.height * 0.02,
-              //             ),
-              //             comment.likeCount.toString()),
-              //       ],
-              //     )),
               Container(
                 padding: EdgeInsets.all(15),
                 width: MediaQuery.of(context).size.width,
@@ -438,6 +407,37 @@ class _TopicPageState extends State<TopicPage>
       ),
     );
   }
+
+  Widget buildCommentMetaButton(Comment comment, Topic topic) {
+    // FIXME: should compare the user now, not the topic owner
+    // if (!comment.isAnonymous && comment.poster?.id == provider.userInfo?.id) {
+    //   return Row(
+    //     children: <Widget>[
+    //       // TODO: delete function
+    //       IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
+    //       buildRowIconButton(
+    //           // FIXME: change the func into add like num
+    //           () {},
+    //           Icon(
+    //             Icons.favorite_border,
+    //             color: Colors.grey,
+    //             size: MediaQuery.of(context).size.height * 0.02,
+    //           ),
+    //           comment.likeCount.toString())
+    //     ],
+    //   );
+    // } else {
+    return buildRowIconButton(
+        // FIXME: change the func into add like num
+        () {},
+        Icon(
+          Icons.favorite_border,
+          color: Colors.grey,
+          size: MediaQuery.of(context).size.height * 0.02,
+        ),
+        comment.likeCount.toString());
+  }
+  // }
 
   // 匿名用户展示
   Widget buildTopicOwnerButton(Topic article) {

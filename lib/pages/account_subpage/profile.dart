@@ -1,8 +1,8 @@
-import 'package:chatdan_frontend/pages/account_subpage/profile_editing_page.dart';
 import 'package:chatdan_frontend/pages/askbox_subpage/askbox_page.dart';
 import 'package:chatdan_frontend/pages/chat_subpage/chat_page.dart';
 import 'package:chatdan_frontend/pages/setting.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:chatdan_frontend/widgets/user.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -57,64 +57,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
   }
 
   Widget _buildHeader() {
-    final avatar = widget.user.avatar == null
-        ? const CircleAvatar(
-            radius: 32.0,
-            child: Icon(Icons.person),
-          )
-        : CircleAvatar(
-            radius: 32.0,
-            backgroundImage: NetworkImage(widget.user.avatar!),
-          );
-
-    Function()? onTap;
-    if (isMe) {
-      onTap = () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileEditingPage(widget.user))).then((_) {
-          if (isMe) {
-            setState(() {
-              user = ChatDanRepository().provider.userInfo!;
-            });
-          }
-        });
-      };
-    }
-
-    return Column(
-      children: [
-        ListTile(
-          leading: GestureDetector(
-            onTap: null,
-            child: avatar,
-          ),
-          title: Text(
-            user.username,
-            style: const TextStyle(fontSize: 22.0),
-          ),
-          subtitle: Text(
-            'ID: ${user.id}',
-            style: const TextStyle(fontSize: 16.0),
-          ),
-          trailing: const Icon(Icons.arrow_forward),
-          onTap: onTap,
-          minVerticalPadding: 4,
-        ),
-        if (user.introduction != null)
-          Column(
-            children: [
-              const Divider(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                alignment: Alignment.centerLeft,
-                child: SelectableText(
-                  '个性签名：${user.introduction!}',
-                  style: const TextStyle(fontSize: 16.0),
-                ),
-              ),
-            ],
-          ),
-      ],
-    );
+    return UserHeaderWidget(user);
   }
 
   Widget _buildBody() {

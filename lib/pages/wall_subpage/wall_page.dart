@@ -57,6 +57,8 @@ class _WallPageState extends State<WallPage> {
               itemBuilder: (context, item, index) => WallWidget(item),
               noItemsFoundIndicatorBuilder: (context) => const Center(child: Text('暂无数据')),
               noMoreItemsIndicatorBuilder: (context) => const Center(child: Text('没有更多了')),
+              firstPageErrorIndicatorBuilder: (context) => const Center(child: Text('加载失败')),
+              newPageErrorIndicatorBuilder: (context) => const Center(child: Text('加载失败')),
             )),
       );
 

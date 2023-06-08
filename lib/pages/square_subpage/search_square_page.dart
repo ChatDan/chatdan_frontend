@@ -1,4 +1,3 @@
-import 'package:chatdan_frontend/pages/account_subpage/mine_page.dart';
 import 'package:chatdan_frontend/pages/square_subpage/list_topics_page.dart';
 import 'package:flutter/material.dart';
 
@@ -29,7 +28,7 @@ class SearchSquareDelegate extends SearchDelegate<String> {
     Widget RIButton = IconButton(
       icon: Icon(Icons.clear),
       onPressed: () {
-        String query = '';
+        query = '';
         showSuggestions(context);
       },
     );
@@ -41,8 +40,7 @@ class SearchSquareDelegate extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-        icon: AnimatedIcon(
-            icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
+        icon: AnimatedIcon(icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
         onPressed: () => close(context, 'error'));
   }
 

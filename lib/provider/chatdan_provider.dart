@@ -34,7 +34,7 @@ class ChatDanProvider extends ChangeNotifier {
     tokenInvalid = true;
     SharedPreferences.getInstance().then((prefs) {
       prefs.remove('access_token');
+      notifyListeners();
     });
-    notifyListeners();
   }
 }

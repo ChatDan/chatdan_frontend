@@ -6,7 +6,7 @@ import 'package:chatdan_frontend/model/post.dart';
 import 'package:chatdan_frontend/provider/chatdan_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
-import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/channel.dart';
@@ -80,13 +80,15 @@ class ChatDanRepository {
               print(error.error.toString());
               break;
           }
-          if (error.requestOptions.headers['Authorization'] != null && statusCode == 401) {
+          if (statusCode == 401) {
             _provider.clear();
           }
           try {
-            SmartDialog.showToast(
-              dialogMessage,
-              displayTime: const Duration(seconds: 1),
+            Fluttertoast.showToast(
+              msg: dialogMessage,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
             );
           } catch (e) {
             // do nothing
@@ -108,9 +110,10 @@ class ChatDanRepository {
   Future<void> loadAccessToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? accessToken = prefs.getString('access_token');
-    if (accessToken != null) {
-      _provider.accessToken = accessToken;
+    if (accessToken == null) {
+      return;
     }
+    _provider.accessToken = accessToken;
 
     try {
       _provider.userInfo = await loadUserMeInfo();
@@ -174,11 +177,16 @@ class ChatDanRepository {
     return User.fromJson(response.data!['data'] as Map<String, dynamic>);
   }
 
-  Future<User> loadUserMeInfo() async {
-    final Response<Map<String, dynamic>> response = await _dio.get(
-      '$_baseUrl/user/me',
-    );
-    return User.fromJson(response.data!['data'] as Map<String, dynamic>);
+  Future<User?> loadUserMeInfo() async {
+    try {
+      final Response<Map<String, dynamic>> response = await _dio.get(
+        '$_baseUrl/user/me',
+      );
+      return User.fromJson(response.data!['data'] as Map<String, dynamic>);
+    } catch (e) {
+      // do nothing
+      return null;
+    }
   }
 
   Future<User> modifyUserMe({
@@ -198,6 +206,25 @@ class ChatDanRepository {
     );
 
     return User.fromJson(response.data!['data'] as Map<String, dynamic>);
+  }
+
+  Future<List<User>?> searchUsers({
+    int pageNum = 1,
+    int pageSize = 10,
+    required String search,
+  }) async {
+    final Response<Map<String, dynamic>> response = await _dio.get(
+      '$_baseUrl/users/_search',
+      queryParameters: <String, dynamic>{
+        'page_num': pageNum,
+        'page_size': pageSize,
+        'search': search,
+      },
+    );
+
+    return (response.data!['data']!['users'] as List<dynamic>?)
+        ?.map((dynamic e) => User.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   /* Message Box 提问箱 */

@@ -1,6 +1,7 @@
 import 'package:chatdan_frontend/bottom_bar.dart';
 import 'package:chatdan_frontend/model/chat.dart';
 import 'package:chatdan_frontend/pages/chat_subpage/chat_page.dart';
+import 'package:chatdan_frontend/pages/chat_subpage/contact_search_page.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -37,7 +38,15 @@ class ContactsPageState extends State<ContactsPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text('聊天'),
+        title: const Text('聊天'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: ContactSearchDelegate());
+            },
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () => Future.sync(() => _pagingController.refresh()),
@@ -47,6 +56,8 @@ class ContactsPageState extends State<ContactsPage> {
               itemBuilder: (context, item, index) => buildChatMessage(context, item),
               noItemsFoundIndicatorBuilder: (context) => const Center(child: Text('暂无数据')),
               noMoreItemsIndicatorBuilder: (context) => const Center(child: Text('没有更多了')),
+              firstPageErrorIndicatorBuilder: (context) => const Center(child: Text('加载失败')),
+              newPageErrorIndicatorBuilder: (context) => const Center(child: Text('加载失败')),
             )),
       ),
       bottomNavigationBar: BottomBar(index: 3),

@@ -19,18 +19,19 @@ class Post {
   int viewCount;
   List<Channel>? channels;
 
-  Post(
-      {required this.id,
-      required this.posterId,
-      required this.poster,
-      this.content = '',
-      required this.visibility,
-      required this.isOwner,
-      required this.isAnonymous,
-      this.anonyname,
-      this.channelCount = 0,
-      this.viewCount = 0,
-      this.channels});
+  Post({
+    required this.id,
+    required this.posterId,
+    required this.poster,
+    this.content = '',
+    required this.visibility,
+    required this.isOwner,
+    required this.isAnonymous,
+    this.anonyname,
+    this.channelCount = 0,
+    this.viewCount = 0,
+    this.channels,
+  });
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
 

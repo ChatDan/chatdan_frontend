@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'user.dart';
+
 part 'message_box.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
@@ -9,28 +11,29 @@ class MessageBox {
   DateTime updatedAt;
   String title;
   final int ownerId;
+  final User? owner;
   int postCount;
   int viewCount;
   List<String>? posts;
 
-  MessageBox(
-      {required this.id,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.title,
-      required this.ownerId,
-      required this.postCount,
-      required this.viewCount,
-      this.posts});
+  MessageBox({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.title,
+    required this.ownerId,
+    this.owner,
+    required this.postCount,
+    required this.viewCount,
+    this.posts,
+  });
 
-  factory MessageBox.fromJson(Map<String, dynamic> json) =>
-      _$MessageBoxFromJson(json);
+  factory MessageBox.fromJson(Map<String, dynamic> json) => _$MessageBoxFromJson(json);
 
   Map<String, dynamic> toJson() => _$MessageBoxToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      (other is MessageBox) && id == other.id;
+  bool operator ==(Object other) => (other is MessageBox) && id == other.id;
 
   @override
   int get hashCode => id;
@@ -48,8 +51,7 @@ class MessageBoxList {
     this.total = 0,
   });
 
-  factory MessageBoxList.fromJson(Map<String, dynamic> json) =>
-      _$MessageBoxListFromJson(json);
+  factory MessageBoxList.fromJson(Map<String, dynamic> json) => _$MessageBoxListFromJson(json);
 
   Map<String, dynamic> toJson() => _$MessageBoxListToJson(this);
 }

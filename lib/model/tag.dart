@@ -8,18 +8,18 @@ class Tag {
   final int temperature;
   final String name;
 
-  Tag(
-      {this.id = 0,
-      this.temperature = 0,
-      required this.name});
+  Tag({
+    this.id = 0,
+    this.temperature = 0,
+    required this.name,
+  });
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 
   Map<String, dynamic> toJson() => _$TagToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      (other is Tag) && id == other.id;
+  bool operator ==(Object other) => (other is Tag) && id == other.id;
 
   @override
   int get hashCode => name.hashCode;

@@ -15,24 +15,24 @@ class Wall {
   final bool isAnonymous;
   bool isShown;
 
-  Wall(
-      {required this.id,
-      required this.createdAt,
-      required this.updatedAt,
-      this.content = '',
-      required this.posterId,
-        required this.poster,
-      required this.visibility,
-      required this.isAnonymous,
-      this.isShown = true});
+  Wall({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.content = '',
+    required this.posterId,
+    required this.poster,
+    required this.visibility,
+    required this.isAnonymous,
+    this.isShown = true,
+  });
 
   factory Wall.fromJson(Map<String, dynamic> json) => _$WallFromJson(json);
 
   Map<String, dynamic> toJson() => _$WallToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      (other is Wall) && id == other.id;
+  bool operator ==(Object other) => (other is Wall) && id == other.id;
 
   @override
   int get hashCode => id;

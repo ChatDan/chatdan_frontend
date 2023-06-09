@@ -11,21 +11,21 @@ class Channel {
   final bool isPostOwner;
   final bool isBoxOwner;
 
-  Channel(
-      {required this.id,
-      required this.postId,
-      this.content = '',
-      required this.isOwner,
-      this.isPostOwner = false,
-      this.isBoxOwner = false});
+  Channel({
+    required this.id,
+    required this.postId,
+    this.content = '',
+    required this.isOwner,
+    this.isPostOwner = false,
+    this.isBoxOwner = false,
+  });
 
   factory Channel.fromJson(Map<String, dynamic> json) => _$ChannelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChannelToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      (other is Channel) && id == other.id;
+  bool operator ==(Object other) => (other is Channel) && id == other.id;
 
   @override
   int get hashCode => id;

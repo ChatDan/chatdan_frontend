@@ -12,6 +12,9 @@ MessageBox _$MessageBoxFromJson(Map<String, dynamic> json) => MessageBox(
       updatedAt: DateTime.parse(json['updated_at'] as String),
       title: json['title'] as String,
       ownerId: json['owner_id'] as int,
+      owner: json['owner'] == null
+          ? null
+          : User.fromJson(json['owner'] as Map<String, dynamic>),
       postCount: json['post_count'] as int,
       viewCount: json['view_count'] as int,
       posts:
@@ -25,6 +28,7 @@ Map<String, dynamic> _$MessageBoxToJson(MessageBox instance) =>
       'updated_at': instance.updatedAt.toIso8601String(),
       'title': instance.title,
       'owner_id': instance.ownerId,
+      'owner': instance.owner,
       'post_count': instance.postCount,
       'view_count': instance.viewCount,
       'posts': instance.posts,

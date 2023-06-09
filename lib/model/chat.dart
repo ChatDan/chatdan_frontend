@@ -16,24 +16,24 @@ class Chat {
   final String lastMessageContent;
   int messageCount;
 
-  Chat(
-      {required this.id,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.oneUserId,
-      required this.oneUser,
-      required this.anotherUserId,
-      required this.anotherUser,
-      this.lastMessageContent = '',
-      this.messageCount = 0});
+  Chat({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.oneUserId,
+    required this.oneUser,
+    required this.anotherUserId,
+    required this.anotherUser,
+    this.lastMessageContent = '',
+    this.messageCount = 0,
+  });
 
   factory Chat.fromJson(Map<String, dynamic> json) => _$ChatFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChatToJson(this);
 
   @override
-  bool operator ==(Object other) =>
-      (other is Chat) && id == other.id;
+  bool operator ==(Object other) => (other is Chat) && id == other.id;
 
   @override
   int get hashCode => id;

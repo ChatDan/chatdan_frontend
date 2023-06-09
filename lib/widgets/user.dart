@@ -10,10 +10,10 @@ class UserWidget extends StatefulWidget {
   const UserWidget(this.user, {Key? key}) : super(key: key);
 
   @override
-  State<UserHeaderWidget> createState() => _UserWidgetState();
+  State createState() => _UserWidgetState();
 }
 
-class _UserWidgetState extends State<UserHeaderWidget> {
+class _UserWidgetState extends State<UserWidget> {
   late User user;
 
   @override

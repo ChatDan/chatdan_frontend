@@ -38,7 +38,7 @@ class _ListUsersWidgetState extends State<ListUsersWidget> {
       List<User>? newUsers;
       if (widget.isSearch) {
         newUsers = await ChatDanRepository().searchUsers(
-          pageNum: 1,
+          pageNum: pageKey,
           pageSize: _pageSize,
           search: widget.search,
         );

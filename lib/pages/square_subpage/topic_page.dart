@@ -5,6 +5,7 @@ import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:date_format/date_format.dart';
 
 import '../account_subpage/profile.dart';
 
@@ -94,6 +95,7 @@ class _TopicPageState extends State<TopicPage>
     _fetchComment();
     ChatDanRepository().viewATopic(_topic!.id);
     _scrollController.addListener(() {
+      print(_scrollController.offset);
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         _getMorecommentList();
@@ -359,6 +361,8 @@ class _TopicPageState extends State<TopicPage>
                 child: ListTile(
                   title: buildCommentOwnerButton(comment),
                   trailing: buildCommentMetaButton(comment, _topic!),
+                  subtitle: Text(formatDate(comment.createdAt,
+                      [yyyy, '/', mm, '/', dd, ' ', HH, ':', nn, ':', ss])),
                 ),
               ), // 元信息（点赞数）
               Container(
@@ -409,7 +413,7 @@ class _TopicPageState extends State<TopicPage>
           // TODO: delete function
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.delete_outline),
             iconSize: MediaQuery.of(context).size.height * 0.02,
           ),
           buildRowIconButton(

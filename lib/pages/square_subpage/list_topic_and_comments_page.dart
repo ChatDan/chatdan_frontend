@@ -61,7 +61,7 @@ class _ListCommentsWidgetState extends State<ListCommentsWidget> {
     _fetchComment();
   }
 
-  Future _getMorecommentList() async {
+  Future _getMoreCommentList() async {
     if (!isLoading) {
       setState(() {
         isLoading = true;
@@ -79,6 +79,14 @@ class _ListCommentsWidgetState extends State<ListCommentsWidget> {
     }
   }
 
+  void _deleteCommentById(int id) {
+    List<Comment>? deleteResultComments;
+    deleteResultComments = commentList.where((c) => c.id == id).toList();
+    setState(() {
+      commentList = deleteResultComments!;
+    });
+  }
+
   @override
   void initState() {
     _topic = widget.topic;
@@ -88,7 +96,7 @@ class _ListCommentsWidgetState extends State<ListCommentsWidget> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        _getMorecommentList();
+        _getMoreCommentList();
       }
     });
   }
@@ -117,7 +125,10 @@ class _ListCommentsWidgetState extends State<ListCommentsWidget> {
       (context, index) {
         Comment comment = commentList[index];
         // return buildCommentWidget(context, comment);
-        return CommentWidget(comment);
+        return CommentWidget(
+          comment: comment,
+          deleteFunc: _deleteCommentById,
+        );
       },
       childCount: commentList.length,
     ));

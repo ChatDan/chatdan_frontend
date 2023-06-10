@@ -7,8 +7,11 @@ import '../repository/chatdan_repository.dart';
 
 class CommentWidget extends StatefulWidget {
   final Comment comment;
+  final Function deleteFunc;
 
-  const CommentWidget(this.comment, {Key? key}) : super(key: key);
+  const CommentWidget(
+      {required this.comment, required this.deleteFunc, Key? key})
+      : super(key: key);
 
   @override
   State<CommentWidget> createState() => _CommentWidgetState();
@@ -216,7 +219,7 @@ class _CommentWidgetState extends State<CommentWidget> {
     try {
       ChatDanRepository().deleteAComment(commentId);
       // TODO:delete the topic in the super comment list
-      // setState(() {});
+      widget.deleteFunc(commentId);
     } catch (e) {
       // do nothing
     }

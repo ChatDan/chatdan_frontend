@@ -125,7 +125,7 @@ class _CommentWidgetState extends State<CommentWidget> {
           ),
           buildRowIconButton(
               // FIXME: change the func into add like num
-              () {},
+              _favorCommentInTopic,
               Icon(
                 Icons.favorite_border,
                 color: Colors.grey,

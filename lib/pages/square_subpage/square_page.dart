@@ -40,22 +40,9 @@ class _SquarePageState extends State<SquarePage> {
     Navigator.push(context,
             MaterialPageRoute(builder: (context) => const CreateTopicPage()))
         .then((value) {
-      setState(() {
-        // FIXME: new topic should be added to the list
-        // if (value != null) {
-        //   topicList..add(value!);
-        // }
-      });
+      setState(() {});
     });
   }
-
-  // void _onSearchTopicButtonTapped() {
-  //   Navigator.push(context,
-  //           MaterialPageRoute(builder: (context) => SearchSquarePage()))
-  //       .then((value) {
-  //     setState(() {});
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -126,18 +113,4 @@ class _SquarePageState extends State<SquarePage> {
           divisionList.map((e) => ListTopicsWidget(divisionId: e.id)).toList(),
     );
   }
-
-//   Widget buildImageCard(String imgUrl) {
-//     return Card(
-//       shape: RoundedRectangleBorder(
-//           borderRadius: BorderRadiusDirectional.circular(10)),
-//       clipBehavior: Clip.antiAlias,
-//       child: Image.network(
-//         imgUrl,
-//         width: 120,
-//         height: 120,
-//         fit: BoxFit.cover,
-//       ),
-//     );
-//   }
 }

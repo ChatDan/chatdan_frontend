@@ -34,7 +34,8 @@ class _ListTopicsWidgetState extends State<ListTopicsWidget> {
   static const _pageSize = 10;
   static const _pageNum = 1;
 
-  final PagingController<DateTime?, Topic> _pagingController = PagingController(firstPageKey: null);
+  final PagingController<DateTime?, Topic> _pagingController =
+      PagingController(firstPageKey: null);
 
   @override
   void initState() {
@@ -95,11 +96,18 @@ class _ListTopicsWidgetState extends State<ListTopicsWidget> {
         child: PagedListView(
             pagingController: _pagingController,
             builderDelegate: PagedChildBuilderDelegate<Topic>(
-              itemBuilder: (context, item, index) => TopicWidget(topic: item),
-              noItemsFoundIndicatorBuilder: (context) => const Center(child: Text('暂无数据')),
-              noMoreItemsIndicatorBuilder: (context) => const Center(child: Text('没有更多了')),
-              firstPageErrorIndicatorBuilder: (context) => const Center(child: Text('加载失败')),
-              newPageErrorIndicatorBuilder: (context) => const Center(child: Text('加载失败')),
+              itemBuilder: (context, item, index) => TopicWidget(
+                topic: item,
+                type: 1,
+              ),
+              noItemsFoundIndicatorBuilder: (context) =>
+                  const Center(child: Text('暂无数据')),
+              noMoreItemsIndicatorBuilder: (context) =>
+                  const Center(child: Text('没有更多了')),
+              firstPageErrorIndicatorBuilder: (context) =>
+                  const Center(child: Text('加载失败')),
+              newPageErrorIndicatorBuilder: (context) =>
+                  const Center(child: Text('加载失败')),
             )),
       );
 

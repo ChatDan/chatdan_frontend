@@ -21,15 +21,8 @@ class TopicPage extends StatefulWidget {
 
 class _TopicPageState extends State<TopicPage>
     with AutomaticKeepAliveClientMixin {
-  List<Comment> commentList = [];
   Topic? _topic;
-  static const _pageSize = 10;
-  int _pageNum = 1;
-  final PagingController<DateTime?, Comment> _pagingController =
-      PagingController(firstPageKey: null);
-  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
-  static final provider = ChatDanRepository().provider;
 
   @override
   bool get wantKeepAlive => true;
@@ -48,11 +41,10 @@ class _TopicPageState extends State<TopicPage>
                 topicId: _topic!.id,
               )),
     ).then((value) {
-      setState(() {
-        if (value != null) {
-          commentList..add(value!);
-        }
-      });
+      if (value != null) {
+        // TODO: refresh the inner page
+        setState(() {});
+      }
     });
   }
 

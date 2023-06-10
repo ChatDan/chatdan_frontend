@@ -96,7 +96,6 @@ class _TopicPageState extends State<TopicPage>
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        // print("get more");
         _getMorecommentList();
       }
     });
@@ -141,8 +140,6 @@ class _TopicPageState extends State<TopicPage>
 
   // 顶部导航栏
   PreferredSizeWidget buildAppBar(BuildContext context) {
-    // TODO: get comment division
-    // final commentName = testTopicJson[''];
     return AppBar(
       // title: const Text("AppBarDemoPage"),
       backgroundColor: Colors.white,
@@ -163,14 +160,6 @@ class _TopicPageState extends State<TopicPage>
 
   // 主体
   Widget buildBodyWidget(BuildContext context) {
-    // return Form(
-    //     child: ListView(
-    //   padding: EdgeInsets.symmetric(horizontal: 20),
-    //   children: <Widget>[
-    //     buildTopic(context),
-    //     buildComments(context),
-    //   ],
-    // ));
     return CustomScrollView(
       slivers: [
         buildTopic(context),
@@ -413,35 +402,39 @@ class _TopicPageState extends State<TopicPage>
   }
 
   Widget buildCommentMetaButton(Comment comment, Topic topic) {
-    // FIXME: should compare the user now, not the topic owner
-    // if (!comment.isAnonymous && comment.poster?.id == provider.userInfo?.id) {
-    //   return Row(
-    //     children: <Widget>[
-    //       // TODO: delete function
-    //       IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
-    //       buildRowIconButton(
-    //           // FIXME: change the func into add like num
-    //           () {},
-    //           Icon(
-    //             Icons.favorite_border,
-    //             color: Colors.grey,
-    //             size: MediaQuery.of(context).size.height * 0.02,
-    //           ),
-    //           comment.likeCount.toString())
-    //     ],
-    //   );
-    // } else {
-    return buildRowIconButton(
-        // FIXME: change the func into add like num
-        () {},
-        Icon(
-          Icons.favorite_border,
-          color: Colors.grey,
-          size: MediaQuery.of(context).size.height * 0.02,
-        ),
-        comment.likeCount.toString());
+    if (!comment.isAnonymous && comment.poster?.id == provider.userInfo?.id) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          // TODO: delete function
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.delete),
+            iconSize: MediaQuery.of(context).size.height * 0.02,
+          ),
+          buildRowIconButton(
+              // FIXME: change the func into add like num
+              () {},
+              Icon(
+                Icons.favorite_border,
+                color: Colors.grey,
+                size: MediaQuery.of(context).size.height * 0.02,
+              ),
+              comment.likeCount.toString())
+        ],
+      );
+    } else {
+      return buildRowIconButton(
+          // FIXME: change the func into add like num
+          () {},
+          Icon(
+            Icons.favorite_border,
+            color: Colors.grey,
+            size: MediaQuery.of(context).size.height * 0.02,
+          ),
+          comment.likeCount.toString());
+    }
   }
-  // }
 
   // 匿名用户展示
   Widget buildTopicOwnerButton(Topic article) {

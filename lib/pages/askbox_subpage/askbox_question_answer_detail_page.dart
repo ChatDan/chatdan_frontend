@@ -98,8 +98,6 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool hasAnswer = widget.post.channels?.isNotEmpty ?? false;
-    String answerContent = widget.post.channels?.first.content ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -144,29 +142,16 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
               ),
             ),
           ),
-          if (hasAnswer && answerContent.isNotEmpty) ...[
-            const Divider(),
-            // 回答块
-            Card(
-              child: ListTile(
-                title: Text(
-                    '${ChatDanRepository().provider.userInfo?.username}回答'),
-                subtitle: Text(answerContent),
-              ),
-            ),
-          ],
+
           // 追问追答列表
           Expanded(
             child: ListView.builder(
               itemCount: channels.length,
               itemBuilder: (context, index) {
                 final channel = channels[index];
+                final titleText = channel.isPostOwner ? '追问' : '回答';
                 return ListTile(
-                  title: channel.isBoxOwner
-                      ? Text(
-                      '${ChatDanRepository().provider.userInfo?.username} 回答')
-                      : Text(
-                      '${ChatDanRepository().provider.userInfo?.username} 追问'),
+                  title: Text(titleText),
                   subtitle: Text(channel.content),
                   trailing: widget.ownerId ==
                       ChatDanRepository().provider.userInfo!.id
@@ -215,6 +200,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
     );
   }
 
+  // 追问
   void _navigateToQuestionPage() {
     Navigator.push(
       context,
@@ -224,7 +210,6 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
         ChatDanRepository()
             .createAChannel(widget.post.id, newChannelContent)
             .then((newChannel) {
-          newChannel.isPostOwner = true;
           _addChannel(newChannel);
         }).catchError((error) {
           showDialog(
@@ -244,7 +229,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       }
     });
   }
-
+  // 回答
   void _navigateToAnswerPage() {
     Navigator.push(
       context,
@@ -254,7 +239,6 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
         ChatDanRepository()
             .createAChannel(widget.post.id, newChannelContent)
             .then((newChannel) {
-          newChannel.isBoxOwner = true;
           _addChannel(newChannel);
         }).catchError((error) {
           showDialog(
@@ -275,6 +259,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
     });
   }
 }
+
 // additional queation page and answer page
 class QuestionPage extends StatefulWidget {
   @override

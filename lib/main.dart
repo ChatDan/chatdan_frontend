@@ -1,6 +1,7 @@
 import 'package:chatdan_frontend/pages/account_subpage/login_page.dart';
 import 'package:chatdan_frontend/pages/account_subpage/mine_page.dart';
 import 'package:chatdan_frontend/pages/account_subpage/register.dart';
+import 'package:chatdan_frontend/pages/askbox_subpage/askbox_detail_page.dart';
 import 'package:chatdan_frontend/pages/askbox_subpage/askbox_page.dart';
 import 'package:chatdan_frontend/pages/chat_subpage/contact_page.dart';
 import 'package:chatdan_frontend/pages/square_subpage/square_page.dart';
@@ -13,6 +14,8 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+import 'model/message_box.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +44,25 @@ class MyApp extends StatelessWidget {
       GoRoute(path: '/register', builder: (context, state) => const RegistrationPage()),
       GoRoute(path: '/home', builder: (context, state) => const SquarePage()),
       GoRoute(path: '/wall', builder: (context, state) => const WallPage()),
-      GoRoute(path: '/askBox', builder: (context, state) =>  AskboxPage(provider.userInfo!.id, inHomePage: true)),
+      GoRoute(path: '/askBox', builder: (context, state) => AskboxPage(provider.userInfo!.id, inHomePage: true)),
+      GoRoute(
+          path: '/askbox/:id',
+          builder: (context, state) {
+            final int id = int.parse(state.pathParameters['id']!);
+            return FutureBuilder(
+                future: ChatDanRepository().loadAMessageBox(id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return const Text('加载失败');
+                  } else if (!snapshot.hasData) {
+                    return const Text('加载失败');
+                  } else {
+                    return AskboxDetailPage(snapshot.data as MessageBox);
+                  }
+                });
+          }),
       GoRoute(path: '/contact', builder: (context, state) => const ContactsPage()),
       GoRoute(path: '/mine', builder: (context, state) => const MinePage())
     ],

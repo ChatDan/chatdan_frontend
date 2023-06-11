@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:chatdan_frontend/pages/askbox_subpage/askbox_detail_page.dart';
+import 'package:chatdan_frontend/model/message_box.dart';
+
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:chatdan_frontend/utils/errors.dart';
 
 class AddQuestionPage extends StatefulWidget {
-  final int messageBoxId;
-  const AddQuestionPage(this.messageBoxId, {super.key});
+  final MessageBox messageBox;
+  const AddQuestionPage(this.messageBox, {super.key});
 
   @override
   State<AddQuestionPage> createState() => _AddQuestionPageState();
@@ -16,7 +19,7 @@ class AddQuestionPage extends StatefulWidget {
 
 class _AddQuestionPageState extends State<AddQuestionPage> {
   final _inputController = TextEditingController();
-  bool _isPublic = false;
+  bool _isPublic = true;
   bool _isAnonymous = false;
 
   void _togglePrivacy() {
@@ -29,7 +32,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
     final question = _inputController.text;
     try {
       await ChatDanRepository().createAPost(
-        messageBoxId: widget.messageBoxId,
+        messageBoxId: widget.messageBox.id,
         content: question,
         isAnonymous: _isAnonymous,
         isPublic: _isPublic,
@@ -44,7 +47,14 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
 
     // 返回到上一个页面
     if (mounted) {
-      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AskboxDetailPage(
+            widget.messageBox,
+          ),
+        ),
+      );
     }
   }
 
@@ -71,8 +81,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                   setState(() {
                     _isAnonymous = value;
                   });
-                }
-            ),
+                }),
             TextFormField(
               controller: _inputController,
               maxLines: 10,

@@ -95,26 +95,36 @@ class _AskboxPageState extends State<AskboxPage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        AskboxDetailPage(box.title, box.id),
+                        AskboxDetailPage(box),
                   ),
                 );
               },
               child: Container(
                 padding: const EdgeInsets.all(16),
-                margin:
-                const EdgeInsets.fromLTRB(10, 5, 10, 10), // 调整边距
+                margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 2,
-                      offset: Offset(0, 1),
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
                     ),
                   ],
+                  border: Border.all(
+                    color: Colors.grey.withOpacity(0.5),
+                    width: 2,
+                  ),
                 ),
                 child: Center(
-                  child: Text(box.title),
+                  child: Text(box.title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Times New Roman',
+                      )),
                 ),
               ),
             );

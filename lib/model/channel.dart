@@ -8,8 +8,8 @@ class Channel {
   final int postId;
   String content;
   final bool isOwner;
-  final bool isPostOwner;
-  final bool isBoxOwner;
+  bool isPostOwner;
+  bool isBoxOwner;
 
   Channel({
     required this.id,

@@ -1,12 +1,18 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:chatdan_frontend/model/post.dart';
 import 'package:chatdan_frontend/model/channel.dart';
 import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:chatdan_frontend/utils/errors.dart';
 
 class QuestionAnswerDetailPage extends StatefulWidget {
   final Post post;
+  final int ownerId;
 
-  QuestionAnswerDetailPage(this.post);
+  QuestionAnswerDetailPage(this.post, this.ownerId);
 
   @override
   _QuestionAnswerDetailPageState createState() =>
@@ -15,11 +21,36 @@ class QuestionAnswerDetailPage extends StatefulWidget {
 
 class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
   List<Channel> channels = [];
+  bool isLoading = false;
+
+  Future<void> _fetchChannels() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final fetchedChannels =
+      await ChatDanRepository().loadChannels(1, 10, widget.post.id);
+      setState(() {
+        channels = fetchedChannels ?? [];
+      });
+    } catch (e) {
+      if (e is DioError && e.error is NotLoginError && mounted) {
+        context.go('/login');
+      } else {
+        SmartDialog.showToast(e.toString(),
+            displayTime: const Duration(seconds: 1));
+      }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    channels = widget.post.channels ?? [];
+    _fetchChannels();
   }
 
   void _addChannel(Channel channel) {
@@ -31,6 +62,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
   void _deleteQuestion() {
     ChatDanRepository().deleteAPost(widget.post.id).then((_) {
       Navigator.pop(context);
+      // Navigator.popAndPushNamed(context, '/askbox/${widget.post.messageBoxId}')
     }).catchError((error) {
       showDialog(
         context: context,
@@ -48,26 +80,20 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
     });
   }
 
-  void _deleteChannel(int channelId) {
-    ChatDanRepository().deleteAChannel(channelId).then((_) {
+  void _deleteChannel(int channelId) async {
+    try {
+      await ChatDanRepository().deleteAChannel(channelId);
+      SmartDialog.showToast('删除成功');
       setState(() {
         channels.removeWhere((channel) => channel.id == channelId);
       });
-    }).catchError((error) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('删除失败'),
-          content: const Text('无法删除追问追答，请重试'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('确定'),
-            ),
-          ],
-        ),
-      );
-    });
+    } catch (e) {
+      if (e is DioError && e.error is NotLoginError && mounted) {
+        context.go('/login');
+      } else {
+        SmartDialog.showToast('删除失败');
+      }
+    }
   }
 
   @override
@@ -79,7 +105,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       appBar: AppBar(
         title: const Text('问答详情'),
         actions: [
-          if (widget.post.isOwner)
+          if (widget.ownerId == ChatDanRepository().provider.userInfo!.id)
             IconButton(
               onPressed: _deleteQuestion,
               icon: const Icon(Icons.delete),
@@ -90,9 +116,32 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
         children: [
           // 提问块
           Card(
-            child: ListTile(
-              title: const Text('提问'),
-              subtitle: Text(widget.post.content),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+              height: 120,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 3,
+                    offset: Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                title: widget.post.poster?.username != null
+                    ? Text('${widget.post.poster?.username}  提问',
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold))
+                    : const Text('匿名用户  提问',
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
+                subtitle: Text(widget.post.content),
+              ),
             ),
           ),
           if (hasAnswer && answerContent.isNotEmpty) ...[
@@ -100,7 +149,8 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
             // 回答块
             Card(
               child: ListTile(
-                title: const Text('回答'),
+                title: Text(
+                    '${ChatDanRepository().provider.userInfo?.username}回答'),
                 subtitle: Text(answerContent),
               ),
             ),
@@ -112,9 +162,14 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
               itemBuilder: (context, index) {
                 final channel = channels[index];
                 return ListTile(
-                  title: const Text('追问'),
+                  title: channel.isBoxOwner
+                      ? Text(
+                      '${ChatDanRepository().provider.userInfo?.username} 回答')
+                      : Text(
+                      '${ChatDanRepository().provider.userInfo?.username} 追问'),
                   subtitle: Text(channel.content),
-                  trailing: widget.post.isOwner
+                  trailing: widget.ownerId ==
+                      ChatDanRepository().provider.userInfo!.id
                       ? IconButton(
                     onPressed: () => _deleteChannel(channel.id),
                     icon: const Icon(Icons.delete),
@@ -129,14 +184,30 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // 判断当前用户是提问者还是回答者
-          final bool isQuestioner =
-              widget.post.posterId == ChatDanRepository().provider.userInfo!.id;
-          if (isQuestioner) {
-            // 提问者追加提问
+          if (widget.post.posterId ==
+              ChatDanRepository().provider.userInfo!.id) {
             _navigateToQuestionPage();
-          } else if (widget.post.isOwner) {
-            // 回答者追加回答
+          } else if (widget.ownerId ==
+              ChatDanRepository().provider.userInfo!.id) {
             _navigateToAnswerPage();
+          } else {
+            // 非提问者也非回答者，不允许追加
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('操作失败'),
+                content: const Text(
+                  '您不是提问者也不是回答者，无法追加提问或回答',
+                  style: TextStyle(fontSize: 16),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('确定'),
+                  ),
+                ],
+              ),
+            );
           }
         },
         child: Icon(Icons.add),
@@ -153,6 +224,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
         ChatDanRepository()
             .createAChannel(widget.post.id, newChannelContent)
             .then((newChannel) {
+          newChannel.isPostOwner = true;
           _addChannel(newChannel);
         }).catchError((error) {
           showDialog(
@@ -182,6 +254,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
         ChatDanRepository()
             .createAChannel(widget.post.id, newChannelContent)
             .then((newChannel) {
+          newChannel.isBoxOwner = true;
           _addChannel(newChannel);
         }).catchError((error) {
           showDialog(
@@ -202,7 +275,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
     });
   }
 }
-
+// additional queation page and answer page
 class QuestionPage extends StatefulWidget {
   @override
   _QuestionPageState createState() => _QuestionPageState();
@@ -221,19 +294,27 @@ class _QuestionPageState extends State<QuestionPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+            TextFormField(
               controller: _textEditingController,
-              decoration: InputDecoration(
-                hintText: '输入追加的问题',
+              maxLines: 10,
+              decoration: const InputDecoration(
+                hintText: '追加问题',
+                border: OutlineInputBorder(),
               ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return '请输入追加问题';
+                }
+                return null;
+              },
             ),
-            SizedBox(height: 16.0),
+
             ElevatedButton(
               onPressed: () {
                 String newChannelContent = _textEditingController.text;
                 Navigator.pop(context, newChannelContent);
               },
-              child: Text('发送'),
+              child: Text('提问'),
             ),
           ],
         ),
@@ -260,25 +341,32 @@ class _AnswerPageState extends State<AnswerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('追加回答'),
+        title: Text('回答'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+            TextFormField(
               controller: _textEditingController,
-              decoration: InputDecoration(
-                hintText: '输入追加的回答',
+              maxLines: 10,
+              decoration: const InputDecoration(
+                hintText: '回答',
+                border: OutlineInputBorder(),
               ),
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return '请输入回答';
+                }
+                return null;
+              },
             ),
-            SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 String newChannelContent = _textEditingController.text;
                 Navigator.pop(context, newChannelContent);
               },
-              child: const Text('发送'),
+              child: const Text('回答'),
             ),
           ],
         ),

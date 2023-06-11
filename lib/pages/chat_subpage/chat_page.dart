@@ -16,7 +16,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class ChatPageState extends State<ChatPage> {
-  final _scrollController = ScrollController();
+  // final _scrollController = ScrollController();
   List<Message> messages = [];
   bool isEnd = false;
   DateTime? startTime;
@@ -25,7 +25,9 @@ class ChatPageState extends State<ChatPage> {
     if (isEnd) {
       return;
     }
-    ChatDanRepository().loadMessagesOfAChat(widget.toUser.id, startTime, 10).then((value) {
+    ChatDanRepository()
+        .loadMessagesOfAChat(widget.toUser.id, startTime, 10)
+        .then((value) {
       if (value?.isEmpty ?? true) {
         isEnd = true;
       } else {
@@ -71,7 +73,8 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget buildMessageBubble(BuildContext context, Message message) {
-    final alignment = message.isMe ? Alignment.centerRight : Alignment.centerLeft;
+    final alignment =
+        message.isMe ? Alignment.centerRight : Alignment.centerLeft;
     final color = message.isMe ? Colors.blue : Colors.green;
 
     return Align(
@@ -86,7 +89,8 @@ class ChatPageState extends State<ChatPage> {
           children: [
             Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.65, // 设置气泡最大宽度为页面宽度的一半
+                maxWidth: MediaQuery.of(context).size.width *
+                    0.65, // 设置气泡最大宽度为页面宽度的一半
               ),
               padding: const EdgeInsets.all(12.0),
               child: Text(
@@ -109,7 +113,11 @@ class ChatPageState extends State<ChatPage> {
         children: [
           GestureDetector(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage(user: widget.toUser)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          UserProfilePage(user: widget.toUser)));
             },
             child: CircleAvatar(
               child: Text(
@@ -129,7 +137,11 @@ class ChatPageState extends State<ChatPage> {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage(user: ChatDanRepository().provider.userInfo!)));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserProfilePage(
+                      user: ChatDanRepository().provider.userInfo!)));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -164,7 +176,9 @@ class ChatPageState extends State<ChatPage> {
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   final message = messages[index];
-                  return message.isMe ? buildmyMessage(context, message) : buildtoUserMessage(context, message);
+                  return message.isMe
+                      ? buildmyMessage(context, message)
+                      : buildtoUserMessage(context, message);
                 },
                 // padding: EdgeInsets.symmetric(vertical: 8.0),
                 // children: messages.reversed.map((message) {

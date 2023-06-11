@@ -1,10 +1,17 @@
 import 'package:chatdan_frontend/model/comment.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+
+import '../pages/account_subpage/profile.dart';
+import '../repository/chatdan_repository.dart';
 
 class CommentWidget extends StatefulWidget {
   final Comment comment;
+  final Function deleteFunc;
 
-  const CommentWidget(this.comment, {Key? key}) : super(key: key);
+  const CommentWidget(
+      {required this.comment, required this.deleteFunc, Key? key})
+      : super(key: key);
 
   @override
   State<CommentWidget> createState() => _CommentWidgetState();
@@ -12,10 +19,17 @@ class CommentWidget extends StatefulWidget {
 
 class _CommentWidgetState extends State<CommentWidget> {
   late Comment comment;
+  late int commentId;
+  late int _likeCount;
+  late bool _isliked;
+  static final provider = ChatDanRepository().provider;
 
   @override
   void initState() {
     comment = widget.comment;
+    commentId = comment.id;
+    _likeCount = comment.likeCount;
+    _isliked = comment.liked;
     super.initState();
   }
 
@@ -27,7 +41,6 @@ class _CommentWidgetState extends State<CommentWidget> {
     if (is_anonymous) {
       commentOwner = comment.anonyname!;
     } else {
-      // FIXME: get user name
       commentOwner = comment.poster!.username;
     }
     // // show anony info
@@ -39,7 +52,7 @@ class _CommentWidgetState extends State<CommentWidget> {
       child: Container(
           margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
           width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.35,
+          // height: MediaQuery.of(context).size.height * 0.2,
           decoration: BoxDecoration(boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
@@ -51,29 +64,17 @@ class _CommentWidgetState extends State<CommentWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // 用户ID展示（用户名称，是否匿名）
-              Container(
-                child: ListTile(
-                  // title: Text(
-                  //   "${comment["title"]}",
-                  //   textAlign: TextAlign.left,
-                  //   style: TextStyle(fontWeight: FontWeight.bold),
-                  // ),
-                  // // FIXME: use a widget(icon + text) instead of simple text to show anony
-                  // // subtitle: Text(topicOwner),
-                  // subtitle: buildAnonyButton(commentOwner, is_anonymous),
-                  title: Text(
-                    commentOwner,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(anonyInfo),
-                ),
-              ),
-
               // 帖子内容展示
               Container(
-                padding: EdgeInsets.only(left: 10),
+                child: ListTile(
+                  title: buildCommentOwnerButton(comment),
+                  trailing: buildCommentMetaButton(comment),
+                  subtitle: Text(formatDate(comment.createdAt,
+                      [yyyy, '/', mm, '/', dd, ' ', HH, ':', nn, ':', ss])),
+                ),
+              ), // 元信息（点赞数）
+              Container(
+                padding: EdgeInsets.all(15),
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,50 +88,140 @@ class _CommentWidgetState extends State<CommentWidget> {
                     Text(
                       comment.content,
                       textAlign: TextAlign.left,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                      // maxLines: 3,
+                      // overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),
               ),
-
-              // 图片
-              // Container(
-              //     padding: EdgeInsets.only(left: 10),
-              //     width: MediaQuery.of(context).size.width,
-              //     child: Wrap(
-              //       // mainAxisAlignment: MainAxisAlignment.start,
-              //       children: [
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //         buildImageCard("https://via.placeholder.com/150"),
-              //       ],
-              //     )),
-
-              // 元信息（点赞数）
-              // TODO: 目前还没有回复的点赞数
-              Container(
-                  padding: EdgeInsets.all(3),
-                  // height: MediaQuery.of(context).size.height * 0.05,
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton.icon(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.thumb_up,
-                          color: Colors.grey,
-                          size: MediaQuery.of(context).size.height * 0.02,
-                        ),
-                        label: Text(
-                          comment.likeCount.toString(),
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      )
-                    ],
-                  )),
             ],
           )),
     );
+  }
+
+  Widget buildRowIconButton(Function func, Icon icon, String text) {
+    return TextButton.icon(
+      onPressed: () {
+        func();
+      },
+      icon: icon,
+      label: Text(
+        text,
+        style: TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  Widget buildCommentMetaButton(Comment comment) {
+    if (!comment.isAnonymous && comment.poster?.id == provider.userInfo?.id) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          // TODO: delete function
+          IconButton(
+            onPressed: _deleteCommentInTopic,
+            icon: const Icon(Icons.delete_outline),
+            iconSize: MediaQuery.of(context).size.height * 0.02,
+          ),
+          buildRowIconButton(
+              // FIXME: change the func into add like num
+              _likeCommentInTopic,
+              Icon(
+                _isliked ? Icons.favorite : Icons.favorite_border,
+                color: Colors.grey,
+                size: MediaQuery.of(context).size.height * 0.02,
+              ),
+              _likeCount.toString())
+        ],
+      );
+    } else {
+      return buildRowIconButton(
+          // FIXME: change the func into add like num
+          _likeCommentInTopic,
+          Icon(
+            _isliked ? Icons.favorite : Icons.favorite_border,
+            color: Colors.grey,
+            size: MediaQuery.of(context).size.height * 0.02,
+          ),
+          _likeCount.toString());
+    }
+  }
+
+  Widget buildCommentOwnerButton(Comment comment) {
+    if (comment.isAnonymous) {
+      final text = comment.anonyname!;
+      return Row(children: <Widget>[
+        const Icon(
+          Icons.remove_circle_outline,
+          color: Colors.black,
+          size: 15,
+        ),
+        Container(
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width - 22),
+            padding: EdgeInsets.only(left: 5),
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            )),
+      ]);
+    } else {
+      final poster = comment.poster!;
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserProfilePage(user: poster)));
+        },
+        child: Row(children: <Widget>[
+          CircleAvatar(
+            backgroundImage:
+                poster.avatar == null ? null : NetworkImage(poster.avatar!),
+            radius: 10,
+          ),
+          Container(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 22),
+              padding: EdgeInsets.only(left: 5),
+              child: Text(
+                poster.username,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )),
+        ]),
+      );
+    }
+  }
+
+  void _likeCommentInTopic() {
+    try {
+      if (_isliked == false) {
+        ChatDanRepository().likeAComment(commentId);
+        setState(() {
+          _likeCount = _likeCount + 1;
+          _isliked = true;
+        });
+      } else {
+        ChatDanRepository().unlikeAComment(commentId);
+        setState(() {
+          _likeCount = _likeCount - 1;
+          _isliked = false;
+        });
+      }
+    } catch (e) {
+      // do nothing
+    }
+  }
+
+  void _deleteCommentInTopic() {
+    try {
+      ChatDanRepository().deleteAComment(commentId);
+      // TODO:delete the topic in the super comment list
+      widget.deleteFunc(commentId);
+    } catch (e) {
+      // do nothing
+    }
   }
 }

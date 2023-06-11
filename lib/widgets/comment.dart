@@ -69,7 +69,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                 child: ListTile(
                   title: buildCommentOwnerButton(comment),
                   trailing: buildCommentMetaButton(comment),
-                  subtitle: Text(formatDate(comment.createdAt,
+                  subtitle: Text(formatDate(comment.createdAt.toLocal(),
                       [yyyy, '/', mm, '/', dd, ' ', HH, ':', nn, ':', ss])),
                 ),
               ), // 元信息（点赞数）

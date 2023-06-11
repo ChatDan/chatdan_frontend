@@ -14,6 +14,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _hidePassword = true;
 
   void _submitForm() async {
     final username = _usernameController.text;
@@ -60,11 +61,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.lock),
+                decoration: InputDecoration(
+                  icon: const Icon(Icons.lock),
                   labelText: '密码',
-                ),
-                obscureText: true,
+                    suffixIcon: IconButton(
+                      icon: Icon(_hidePassword ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          _hidePassword = !_hidePassword;
+                        });
+                      },
+                    )),
+                obscureText: _hidePassword,
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a password';

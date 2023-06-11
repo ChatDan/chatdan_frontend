@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _showPassword = false;
+  bool _hidePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +52,14 @@ class _LoginPageState extends State<LoginPage> {
                     icon: const Icon(Icons.lock),
                     labelText: '密码',
                     suffixIcon: IconButton(
-                      icon: Icon(_showPassword ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(_hidePassword ? Icons.visibility_off : Icons.visibility),
                       onPressed: () {
                         setState(() {
-                          _showPassword = !_showPassword;
+                          _hidePassword = !_hidePassword;
                         });
                       },
                     )),
-                obscureText: _showPassword,
+                obscureText: _hidePassword,
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return '请输入密码';

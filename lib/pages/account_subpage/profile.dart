@@ -1,3 +1,4 @@
+import 'package:chatdan_frontend/pages/account_subpage/list_comment_page.dart';
 import 'package:chatdan_frontend/pages/askbox_subpage/askbox_page.dart';
 import 'package:chatdan_frontend/pages/chat_subpage/chat_page.dart';
 import 'package:chatdan_frontend/pages/setting.dart';
@@ -111,7 +112,14 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
         ListTile(
           leading: const Icon(Icons.reply),
           title: const Text('我的评论'),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ListCommentPage(
+                          userId: ChatDanRepository().provider.userInfo!.id,
+                        )));
+          },
         ),
         ListTile(
           leading: const Icon(Icons.favorite),

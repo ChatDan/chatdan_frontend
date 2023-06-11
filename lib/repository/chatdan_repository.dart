@@ -915,8 +915,7 @@ class ChatDanRepository {
     required int pageNum,
     required int pageSize,
     required int userId,
-    String orderBy = 'created_at', // one of [created_at, updated_at]
-    DateTime? startTime,
+    String orderBy = 'id', // one of [id, like]
   }) async {
     final Response<Map<String, dynamic>> response = await _dio.get(
       '$_baseUrl/comments/_user/$userId',
@@ -924,7 +923,6 @@ class ChatDanRepository {
         'page_num': pageNum,
         'page_size': pageSize,
         'order_by': orderBy,
-        if (startTime != null) 'start_time': startTime.toIso8601String(),
       },
     );
     return (response.data!['data']!['comments'] as List<dynamic>?)

@@ -33,7 +33,6 @@ class _TopicWidgetState extends State<TopicWidget> {
 
   @override
   void initState() {
-    print("init topic");
     article = widget.topic;
     topicId = article.id;
     _likeCount = article.likeCount;

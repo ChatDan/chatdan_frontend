@@ -113,6 +113,7 @@ class _ListCommentsWidgetState extends State<ListCommentsWidget> {
   Widget buildBodyWidget(BuildContext context) {
     return CustomScrollView(
       controller: _scrollController,
+      physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         buildTopic(context),
         buildComments(context),

@@ -20,16 +20,16 @@ class CommentWidget extends StatefulWidget {
 class _CommentWidgetState extends State<CommentWidget> {
   late Comment comment;
   late int commentId;
-  late int _favorCount;
-  late bool _isfavored;
+  late int _likeCount;
+  late bool _isliked;
   static final provider = ChatDanRepository().provider;
 
   @override
   void initState() {
     comment = widget.comment;
     commentId = comment.id;
-    _favorCount = comment.likeCount;
-    _isfavored = comment.liked;
+    _likeCount = comment.likeCount;
+    _isliked = comment.liked;
     super.initState();
   }
 
@@ -125,25 +125,25 @@ class _CommentWidgetState extends State<CommentWidget> {
           ),
           buildRowIconButton(
               // FIXME: change the func into add like num
-              _favorCommentInTopic,
+              _likeCommentInTopic,
               Icon(
-                Icons.favorite_border,
+                _isliked ? Icons.favorite : Icons.favorite_border,
                 color: Colors.grey,
                 size: MediaQuery.of(context).size.height * 0.02,
               ),
-              comment.likeCount.toString())
+              _likeCount.toString())
         ],
       );
     } else {
       return buildRowIconButton(
           // FIXME: change the func into add like num
-          _favorCommentInTopic,
+          _likeCommentInTopic,
           Icon(
-            Icons.favorite_border,
+            _isliked ? Icons.favorite : Icons.favorite_border,
             color: Colors.grey,
             size: MediaQuery.of(context).size.height * 0.02,
           ),
-          _favorCount.toString());
+          _likeCount.toString());
     }
   }
 
@@ -195,19 +195,19 @@ class _CommentWidgetState extends State<CommentWidget> {
     }
   }
 
-  void _favorCommentInTopic() {
+  void _likeCommentInTopic() {
     try {
-      if (_isfavored == false) {
+      if (_isliked == false) {
         ChatDanRepository().likeAComment(commentId);
         setState(() {
-          _favorCount = _favorCount + 1;
-          _isfavored = true;
+          _likeCount = _likeCount + 1;
+          _isliked = true;
         });
       } else {
         ChatDanRepository().unlikeAComment(commentId);
         setState(() {
-          _favorCount = _favorCount - 1;
-          _isfavored = false;
+          _likeCount = _likeCount - 1;
+          _isliked = false;
         });
       }
     } catch (e) {

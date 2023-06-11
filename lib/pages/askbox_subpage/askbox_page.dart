@@ -1,19 +1,24 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-
 import 'package:chatdan_frontend/bottom_bar.dart';
 import 'package:chatdan_frontend/model/message_box.dart';
-import 'package:chatdan_frontend/pages/askbox_subpage/create_ask_box_page.dart';
 import 'package:chatdan_frontend/pages/askbox_subpage/askbox_detail_page.dart';
+import 'package:chatdan_frontend/pages/askbox_subpage/create_ask_box_page.dart';
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:chatdan_frontend/utils/errors.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:chatdan_frontend/repository/chatdan_repository.dart';
-import 'package:chatdan_frontend/utils/errors.dart';
-
 class AskboxPage extends StatefulWidget {
-  const AskboxPage(this.ownerId, {super.key});
+  const AskboxPage(
+    this.ownerId, {
+    super.key,
+    this.inHomePage = false,
+  });
+
   final int ownerId;
+  final bool inHomePage;
+
   // const AskboxPage({Key? key}) : super(key: key);
 
   @override
@@ -44,8 +49,7 @@ class _AskboxPageState extends State<AskboxPage> {
       if (e is DioError && e.error is NotLoginError && mounted) {
         context.go('/login');
       } else {
-        SmartDialog.showToast(e.toString(),
-            displayTime: const Duration(seconds: 1));
+        SmartDialog.showToast(e.toString(), displayTime: const Duration(seconds: 1));
       }
     } finally {
       setState(() {
@@ -75,77 +79,75 @@ class _AskboxPageState extends State<AskboxPage> {
         onRefresh: _refreshMessageBoxes,
         child: isLoading
             ? const Center(
-          child: CircularProgressIndicator(),
-        )
+                child: CircularProgressIndicator(),
+              )
             : boxes.isEmpty
-            ? const Center(
-          child: Text(
-            '该用户尚未开通提问箱',
-            style: TextStyle(fontSize: 20),
-          ),
-        )
-            : ListView.builder(
-          itemCount: boxes.length,
-          itemBuilder: (context, index) {
-            final box = boxes[index];
-            return GestureDetector(
-              onTap: () {
-                // 跳转到对应的提问箱内页
+                ? const Center(
+                    child: Text(
+                      '该用户尚未开通提问箱',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: boxes.length,
+                    itemBuilder: (context, index) {
+                      final box = boxes[index];
+                      return GestureDetector(
+                        onTap: () {
+                          // 跳转到对应的提问箱内页
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AskboxDetailPage(box),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Colors.grey.withOpacity(0.5),
+                              width: 2,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(box.title,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Times New Roman',
+                                )),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+      ),
+      bottomNavigationBar: widget.inHomePage ? const BottomBar(index: 2) : null,
+      floatingActionButton: widget.ownerId == ChatDanRepository().provider.userInfo!.id
+          ? FloatingActionButton(
+              onPressed: () {
+                // 创建提问箱
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        AskboxDetailPage(box),
+                    builder: (context) => CreateAskboxPage(),
                   ),
                 );
               },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.fromLTRB(10, 5, 10, 10),
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: Colors.grey.withOpacity(0.5),
-                    width: 2,
-                  ),
-                ),
-                child: Center(
-                  child: Text(box.title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontFamily: 'Times New Roman',
-                      )),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: const BottomBar(index: 2),
-      floatingActionButton:
-      widget.ownerId == ChatDanRepository().provider.userInfo!.id
-          ? FloatingActionButton(
-        onPressed: () {
-          // 创建提问箱
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CreateAskboxPage(),
-            ),
-          );
-        },
-        child: const Icon(Icons.add),
-      )
+              child: const Icon(Icons.add),
+            )
           : null,
     );
   }

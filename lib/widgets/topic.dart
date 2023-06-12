@@ -49,9 +49,11 @@ class _TopicWidgetState extends State<TopicWidget> {
             builder: (context) => CreateCommentPage(
                   topicId: topicId,
                 ))).then((value) {
-      setState(() {
-        _commentCount = _commentCount + 1;
-      });
+       if (value != null) {
+        setState(() {
+          _commentCount = _commentCount + 1;
+        });
+       }
     });
   }
 

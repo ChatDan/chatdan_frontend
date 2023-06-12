@@ -621,7 +621,7 @@ class ChatDanRepository {
         'content': content,
         'division_id': divisionId,
         'is_anonymous': isAnonymous,
-        if (tags != null) 'tags': tags,
+        if (tags != null && tags.isNotEmpty) 'tags': tags,
       },
     );
     return Topic.fromJson(response.data!['data'] as Map<String, dynamic>);

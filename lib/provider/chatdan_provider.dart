@@ -28,13 +28,20 @@ class ChatDanProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clear() {
+  // debug only
+  Future<void> setAccessToken(String value) async {
+    _accessToken = value;
+    tokenInvalid = false;
+    var preferences = await SharedPreferences.getInstance();
+    await preferences.setString('access_token', value);
+  }
+
+  Future<void> clear() async {
     _accessToken = null;
     _userInfo = null;
     tokenInvalid = true;
-    SharedPreferences.getInstance().then((prefs) {
-      prefs.remove('access_token');
-      notifyListeners();
-    });
+    var preferences = await SharedPreferences.getInstance();
+    await preferences.remove('access_token');
+    notifyListeners();
   }
 }

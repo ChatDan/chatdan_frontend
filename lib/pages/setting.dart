@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -30,6 +31,12 @@ class _SettingPageState extends State<SettingPage> {
           ListTile(
             title: const Text('账号与安全'),
             onTap: () {},
+          ),
+          ListTile(
+            title: const Text('开发者模式'),
+            onTap: () {
+              GoRouter.of(context).push('/debug');
+            },
           ),
           const Divider(),
           const ListTile(

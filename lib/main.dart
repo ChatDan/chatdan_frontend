@@ -1,9 +1,11 @@
+import 'package:chatdan_frontend/model/message_box.dart';
 import 'package:chatdan_frontend/pages/account_subpage/login_page.dart';
 import 'package:chatdan_frontend/pages/account_subpage/mine_page.dart';
 import 'package:chatdan_frontend/pages/account_subpage/register.dart';
 import 'package:chatdan_frontend/pages/askbox_subpage/askbox_detail_page.dart';
 import 'package:chatdan_frontend/pages/askbox_subpage/askbox_page.dart';
 import 'package:chatdan_frontend/pages/chat_subpage/contact_page.dart';
+import 'package:chatdan_frontend/pages/debug.dart';
 import 'package:chatdan_frontend/pages/square_subpage/square_page.dart';
 import 'package:chatdan_frontend/pages/wall_subpage/wall_page.dart';
 import 'package:chatdan_frontend/provider/chatdan_provider.dart';
@@ -14,8 +16,6 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import 'model/message_box.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
     initialLocation: '/home',
     routes: <GoRoute>[
       GoRoute(path: '/placeholder', builder: (context, state) => const Placeholder()),
+      GoRoute(path: '/debug', builder: (context, state) => const DebugPage()),
       GoRoute(
         path: '/login',
         builder: (context, state) => LoginPage(

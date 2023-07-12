@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
@@ -47,9 +48,13 @@ class ChatDanRepository {
           if (_provider.accessToken != null) {
             options.headers['Authorization'] = 'Bearer ${_provider.accessToken}';
           }
+          print('Request: ${options.method} ${options.uri}');
+          print('Request headers: ${options.headers}');
           return handler.next(options);
         },
-        onError: (DioError error, ErrorInterceptorHandler handler) {
+        onError: (DioError error, ErrorInterceptorHandler handler) async {
+          print('Error: ${error.message}');
+          print('Error response: ${error.response}');
           int statusCode = error.response?.statusCode ?? 0;
           String dialogMessage;
           switch (error.type) {
@@ -69,8 +74,25 @@ class ChatDanRepository {
               dialogMessage = '证书验证失败';
               break;
             case DioErrorType.badResponse:
-              final response = error.response!.data as Map<String, dynamic>;
-              dialogMessage = response['error_msg'] as String;
+              dialogMessage = '响应异常';
+              final data = error.response?.data;
+              if (data is Map<String, dynamic>) {
+                if (data['error_msg'] is String) {
+                  dialogMessage = data['error_msg'] as String;
+                } else if (data['message'] is String) {
+                  dialogMessage = data['message'] as String;
+                }
+              } else if (data is String) {
+                dialogMessage = data;
+                try {
+                  var dataMap = jsonDecode(data);
+                  if (dataMap['error_msg'] is String) {
+                    dialogMessage = dataMap['error_msg'] as String;
+                  } else if (dataMap['message'] is String) {
+                    dialogMessage = dataMap['message'] as String;
+                  }
+                } catch (_) {}
+              }
               break;
             case DioErrorType.connectionError:
               dialogMessage = '网络连接异常';
@@ -81,7 +103,7 @@ class ChatDanRepository {
               break;
           }
           if (statusCode == 401) {
-            _provider.clear();
+            await _provider.clear();
           }
           try {
             Fluttertoast.showToast(
@@ -95,6 +117,12 @@ class ChatDanRepository {
           }
 
           return handler.next(error);
+        },
+        onResponse: (Response response, ResponseInterceptorHandler handler) {
+          print('Response: ${response.statusCode} ${response.requestOptions.uri}');
+          print('Response headers: ${response.headers}');
+          print('Response Body: ${response.data}');
+          return handler.next(response);
         },
       ),
     );

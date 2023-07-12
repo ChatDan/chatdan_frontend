@@ -74,7 +74,9 @@ class _AskboxDetailPageState extends State<AskboxDetailPage> {
     try {
       await ChatDanRepository().deleteAMessageBox(widget.messageBox.id);
       SmartDialog.showToast('提问箱删除成功');
-      Navigator.popAndPushNamed(context, '/askbox'); // 跳转到 AskBoxPage，并刷新数据
+      if (mounted) {
+        context.pop(); // 退出
+      }
     } catch (e) {
       if (e is DioError && e.error is NotLoginError && mounted) {
         context.go('/login');

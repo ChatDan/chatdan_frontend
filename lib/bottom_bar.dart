@@ -75,7 +75,7 @@ class _BottomBarState extends State<BottomBar> {
         BottomNavigationBarItem(icon: Icon(Icons.person), label: '我的'),
       ],
       currentIndex: _selectedIndex,
-      selectedItemColor: Colors.teal,
+      selectedItemColor: Theme.of(context).primaryColor,
       type: BottomNavigationBarType.fixed,
       onTap: _onItemTapped,
     );

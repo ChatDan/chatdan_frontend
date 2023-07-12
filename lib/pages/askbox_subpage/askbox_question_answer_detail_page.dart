@@ -1,12 +1,11 @@
+import 'package:chatdan_frontend/model/channel.dart';
+import 'package:chatdan_frontend/model/post.dart';
+import 'package:chatdan_frontend/repository/chatdan_repository.dart';
+import 'package:chatdan_frontend/utils/errors.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:chatdan_frontend/model/post.dart';
-import 'package:chatdan_frontend/model/channel.dart';
-import 'package:chatdan_frontend/repository/chatdan_repository.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:chatdan_frontend/utils/errors.dart';
 
 class QuestionAnswerDetailPage extends StatefulWidget {
   final Post post;
@@ -15,8 +14,7 @@ class QuestionAnswerDetailPage extends StatefulWidget {
   QuestionAnswerDetailPage(this.post, this.ownerId);
 
   @override
-  _QuestionAnswerDetailPageState createState() =>
-      _QuestionAnswerDetailPageState();
+  _QuestionAnswerDetailPageState createState() => _QuestionAnswerDetailPageState();
 }
 
 class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
@@ -28,8 +26,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       setState(() {
         isLoading = true;
       });
-      final fetchedChannels =
-      await ChatDanRepository().loadChannels(1, 10, widget.post.id);
+      final fetchedChannels = await ChatDanRepository().loadChannels(1, 10, widget.post.id);
       setState(() {
         channels = fetchedChannels ?? [];
       });
@@ -37,8 +34,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       if (e is DioError && e.error is NotLoginError && mounted) {
         context.go('/login');
       } else {
-        SmartDialog.showToast(e.toString(),
-            displayTime: const Duration(seconds: 1));
+        SmartDialog.showToast(e.toString(), displayTime: const Duration(seconds: 1));
       }
     } finally {
       setState(() {
@@ -98,7 +94,6 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('问答详情'),
@@ -133,11 +128,8 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
               child: ListTile(
                 title: widget.post.poster?.username != null
                     ? Text('${widget.post.poster?.username}  提问',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold))
-                    : const Text('匿名用户  提问',
-                    style: TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))
+                    : const Text('匿名用户  提问', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 subtitle: Text(widget.post.content),
               ),
             ),
@@ -153,12 +145,11 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
                 return ListTile(
                   title: Text(titleText),
                   subtitle: Text(channel.content),
-                  trailing: widget.ownerId ==
-                      ChatDanRepository().provider.userInfo!.id
+                  trailing: widget.ownerId == ChatDanRepository().provider.userInfo!.id
                       ? IconButton(
-                    onPressed: () => _deleteChannel(channel.id),
-                    icon: const Icon(Icons.delete),
-                  )
+                          onPressed: () => _deleteChannel(channel.id),
+                          icon: const Icon(Icons.delete),
+                        )
                       : null,
                 );
               },
@@ -167,13 +158,12 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
         onPressed: () {
           // 判断当前用户是提问者还是回答者
-          if (widget.post.posterId ==
-              ChatDanRepository().provider.userInfo!.id) {
+          if (widget.post.posterId == ChatDanRepository().provider.userInfo!.id) {
             _navigateToQuestionPage();
-          } else if (widget.ownerId ==
-              ChatDanRepository().provider.userInfo!.id) {
+          } else if (widget.ownerId == ChatDanRepository().provider.userInfo!.id) {
             _navigateToAnswerPage();
           } else {
             // 非提问者也非回答者，不允许追加
@@ -207,9 +197,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       MaterialPageRoute(builder: (context) => QuestionPage()),
     ).then((newChannelContent) {
       if (newChannelContent != null) {
-        ChatDanRepository()
-            .createAChannel(widget.post.id, newChannelContent)
-            .then((newChannel) {
+        ChatDanRepository().createAChannel(widget.post.id, newChannelContent).then((newChannel) {
           _addChannel(newChannel);
         }).catchError((error) {
           showDialog(
@@ -229,6 +217,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       }
     });
   }
+
   // 回答
   void _navigateToAnswerPage() {
     Navigator.push(
@@ -236,9 +225,7 @@ class _QuestionAnswerDetailPageState extends State<QuestionAnswerDetailPage> {
       MaterialPageRoute(builder: (context) => AnswerPage()),
     ).then((newChannelContent) {
       if (newChannelContent != null) {
-        ChatDanRepository()
-            .createAChannel(widget.post.id, newChannelContent)
-            .then((newChannel) {
+        ChatDanRepository().createAChannel(widget.post.id, newChannelContent).then((newChannel) {
           _addChannel(newChannel);
         }).catchError((error) {
           showDialog(
@@ -293,7 +280,6 @@ class _QuestionPageState extends State<QuestionPage> {
                 return null;
               },
             ),
-
             ElevatedButton(
               onPressed: () {
                 String newChannelContent = _textEditingController.text;

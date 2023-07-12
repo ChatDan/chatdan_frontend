@@ -109,7 +109,7 @@ class MyApp extends StatelessWidget {
       locale: const Locale('zh'),
       title: 'ChatDan',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorSchemeSeed: Colors.teal,
         useMaterial3: true,
       ),
       routerConfig: _router,

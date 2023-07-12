@@ -57,7 +57,7 @@ class _SquarePageState extends State<SquarePage> {
             onPressed: () {
               _onCreateTopicButtonTapped();
             },
-            backgroundColor: Colors.teal,
+            backgroundColor: Theme.of(context).primaryColor,
             child: const Icon(
               Icons.add,
               color: Colors.white,
